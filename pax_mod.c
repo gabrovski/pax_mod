@@ -639,6 +639,8 @@ static void pax_mod_audit_rule_free (void *lsmrule)
 }
 
 static struct security_operations pax_mod_sec_ops = {
+  .name = "pax_mod",
+
   .ptrace_access_check  =  pax_mod_ptrace_access_check,
   .ptrace_traceme  =  pax_mod_ptrace_traceme,
   .quotactl  =  pax_mod_quotactl,
