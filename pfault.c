@@ -6,7 +6,7 @@
 
 
 static struct security_operations pax_mod_sec_ops = {
-  .name = "pax_mod",
+  .name = "pfault",
 };
 
 dotraplinkage void pax_mod_do_page_fault(struct pt_regs *regs, long error_code) {
