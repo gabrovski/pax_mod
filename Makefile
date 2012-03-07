@@ -1,1 +1,1 @@
-obj-m := pax_mod.o
+obj-m := pfault.o
