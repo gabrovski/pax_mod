@@ -1,0 +1,5674 @@
+Only in linux-3.2.11-krum-pax/arch/x86/mm: mm
+diff -rup linux-3.2.11-pax/fs/aio.c linux-3.2.11-krum-pax/fs/aio.c
+--- linux-3.2.11-pax/fs/aio.c	2012-03-16 15:56:08.491065656 -0400
++++ linux-3.2.11-krum-pax/fs/aio.c	2012-03-16 15:18:42.038133024 -0400
+@@ -106,6 +106,9 @@ static void aio_free_ring(struct kioctx
+ 
+ static int aio_setup_ring(struct kioctx *ctx)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_aio_setup_ring();
++#endif
+ 	struct aio_ring *ring;
+ 	struct aio_ring_info *info = &ctx->ring_info;
+ 	unsigned nr_events = ctx->max_reqs;
+diff -rup linux-3.2.11-pax/fs/autofs4/waitq.c linux-3.2.11-krum-pax/fs/autofs4/waitq.c
+--- linux-3.2.11-pax/fs/autofs4/waitq.c	2012-03-16 15:56:08.494399067 -0400
++++ linux-3.2.11-krum-pax/fs/autofs4/waitq.c	2012-03-16 15:18:39.251423255 -0400
+@@ -58,6 +58,9 @@ void autofs4_catatonic_mode(struct autof
+ 
+ static int autofs4_write(struct file *file, const void *addr, int bytes)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_autofs4_write();
++#endif
+ 	unsigned long sigpipe, flags;
+ 	mm_segment_t fs;
+ 	const char __user *data = (const char __force_user *)addr;
+diff -rup linux-3.2.11-pax/fs/befs/linuxvfs.c linux-3.2.11-krum-pax/fs/befs/linuxvfs.c
+--- linux-3.2.11-pax/fs/befs/linuxvfs.c	2012-03-16 15:56:08.494399067 -0400
++++ linux-3.2.11-krum-pax/fs/befs/linuxvfs.c	2012-03-16 15:18:39.381425289 -0400
+@@ -501,6 +501,9 @@ befs_follow_link(struct dentry *dentry,
+ 
+ static void befs_put_link(struct dentry *dentry, struct nameidata *nd, void *p)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_befs_put_link();
++#endif
+ 	befs_inode_info *befs_ino = BEFS_I(dentry->d_inode);
+ 	if (befs_ino->i_flags & BEFS_LONG_SYMLINK) {
+ 		const char *link = nd_get_link(nd);
+diff -rup linux-3.2.11-pax/fs/binfmt_aout.c linux-3.2.11-krum-pax/fs/binfmt_aout.c
+--- linux-3.2.11-pax/fs/binfmt_aout.c	2012-03-16 15:56:08.501065798 -0400
++++ linux-3.2.11-krum-pax/fs/binfmt_aout.c	2012-03-16 15:18:41.044784347 -0400
+@@ -204,6 +204,9 @@ static unsigned long __user *create_aout
+ 
+ static int load_aout_binary(struct linux_binprm * bprm, struct pt_regs * regs)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_load_aout_binary();
++#endif
+ 	struct exec ex;
+ 	unsigned long error;
+ 	unsigned long fd_offset;
+diff -rup linux-3.2.11-pax/fs/binfmt_elf.c linux-3.2.11-krum-pax/fs/binfmt_elf.c
+--- linux-3.2.11-pax/fs/binfmt_elf.c	2012-03-16 15:56:08.504399215 -0400
++++ linux-3.2.11-krum-pax/fs/binfmt_elf.c	2012-03-16 15:18:41.611459782 -0400
+@@ -87,6 +87,9 @@ static struct linux_binfmt elf_format =
+ 
+ static int set_brk(unsigned long start, unsigned long end)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_set_brk();
++#endif
+ 	unsigned long e = end;
+ 
+ 	start = ELF_PAGEALIGN(start);
+@@ -932,6 +935,9 @@ static unsigned long randomize_stack_top
+ 
+ static int load_elf_binary(struct linux_binprm *bprm, struct pt_regs *regs)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_load_elf_binary();
++#endif
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+  	unsigned long load_addr = 0, load_bias = 0;
+ 	int load_addr_set = 0;
+@@ -1817,6 +1823,9 @@ static int fill_psinfo(struct elf_prpsin
+ 
+ static void fill_auxv_note(struct memelfnote *note, struct mm_struct *mm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fill_auxv_note();
++#endif
+ 	elf_addr_t *auxv = (elf_addr_t *) mm->saved_auxv;
+ 	int i = 0;
+ 	do {
+diff -rup linux-3.2.11-pax/fs/binfmt_flat.c linux-3.2.11-krum-pax/fs/binfmt_flat.c
+--- linux-3.2.11-pax/fs/binfmt_flat.c	2012-03-16 15:56:08.507732584 -0400
++++ linux-3.2.11-krum-pax/fs/binfmt_flat.c	2012-03-16 15:18:38.808083065 -0400
+@@ -425,6 +425,9 @@ void old_reloc(unsigned long rl)
+ static int load_flat_file(struct linux_binprm * bprm,
+ 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_load_flat_file();
++#endif
+ 	struct flat_hdr * hdr;
+ 	unsigned long textpos = 0, datapos = 0, result;
+ 	unsigned long realdatastart = 0;
+diff -rup linux-3.2.11-pax/fs/bio.c linux-3.2.11-krum-pax/fs/bio.c
+--- linux-3.2.11-pax/fs/bio.c	2012-03-16 15:56:08.507732584 -0400
++++ linux-3.2.11-krum-pax/fs/bio.c	2012-03-16 15:18:39.071420478 -0400
+@@ -1229,6 +1229,9 @@ EXPORT_SYMBOL(bio_map_kern);
+ 
+ static void bio_copy_kern_endio(struct bio *bio, int err)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_bio_copy_kern_endio();
++#endif
+ 	struct bio_vec *bvec;
+ 	const int read = bio_data_dir(bio) == READ;
+ 	struct bio_map_data *bmd = bio->bi_private;
+diff -rup linux-3.2.11-pax/fs/btrfs/relocation.c linux-3.2.11-krum-pax/fs/btrfs/relocation.c
+--- linux-3.2.11-pax/fs/btrfs/relocation.c	2012-03-16 15:56:08.521066135 -0400
++++ linux-3.2.11-krum-pax/fs/btrfs/relocation.c	2012-03-16 15:18:39.931433768 -0400
+@@ -1231,6 +1231,9 @@ static int __add_reloc_root(struct btrfs
+  */
+ static int __update_reloc_root(struct btrfs_root *root, int del)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___update_reloc_root();
++#endif
+ 	struct rb_node *rb_node;
+ 	struct mapping_node *node = NULL;
+ 	struct reloc_control *rc = root->fs_info->reloc_ctl;
+diff -rup linux-3.2.11-pax/fs/cachefiles/bind.c linux-3.2.11-krum-pax/fs/cachefiles/bind.c
+--- linux-3.2.11-pax/fs/cachefiles/bind.c	2012-03-16 15:56:08.521066133 -0400
++++ linux-3.2.11-krum-pax/fs/cachefiles/bind.c	2012-03-16 15:18:38.684747794 -0400
+@@ -29,6 +29,9 @@ static int cachefiles_daemon_add_cache(s
+  */
+ int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cachefiles_daemon_bind();
++#endif
+ 	_enter("{%u,%u,%u,%u,%u,%u},%s",
+ 	       cache->frun_percent,
+ 	       cache->fcull_percent,
+diff -rup linux-3.2.11-pax/fs/cachefiles/daemon.c linux-3.2.11-krum-pax/fs/cachefiles/daemon.c
+--- linux-3.2.11-pax/fs/cachefiles/daemon.c	2012-03-16 15:56:08.521066133 -0400
++++ linux-3.2.11-krum-pax/fs/cachefiles/daemon.c	2012-03-16 15:18:38.454744204 -0400
+@@ -375,6 +375,9 @@ static int cachefiles_daemon_fcull(struc
+  */
+ static int cachefiles_daemon_fstop(struct cachefiles_cache *cache, char *args)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cachefiles_daemon_fstop();
++#endif
+ 	unsigned long fstop;
+ 
+ 	_enter(",%s", args);
+@@ -447,6 +450,9 @@ static int cachefiles_daemon_bcull(struc
+  */
+ static int cachefiles_daemon_bstop(struct cachefiles_cache *cache, char *args)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cachefiles_daemon_bstop();
++#endif
+ 	unsigned long bstop;
+ 
+ 	_enter(",%s", args);
+diff -rup linux-3.2.11-pax/fs/cachefiles/proc.c linux-3.2.11-krum-pax/fs/cachefiles/proc.c
+--- linux-3.2.11-pax/fs/cachefiles/proc.c	2012-03-16 15:56:08.527732874 -0400
++++ linux-3.2.11-krum-pax/fs/cachefiles/proc.c	2012-03-16 15:18:40.508109353 -0400
+@@ -23,6 +23,9 @@ atomic_unchecked_t cachefiles_create_his
+  */
+ static int cachefiles_histogram_show(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cachefiles_histogram_show();
++#endif
+ 	unsigned long index;
+ 	unsigned x, y, z, t;
+ 
+diff -rup linux-3.2.11-pax/fs/cachefiles/rdwr.c linux-3.2.11-krum-pax/fs/cachefiles/rdwr.c
+--- linux-3.2.11-pax/fs/cachefiles/rdwr.c	2012-03-16 15:56:08.527732874 -0400
++++ linux-3.2.11-krum-pax/fs/cachefiles/rdwr.c	2012-03-16 15:18:39.331424488 -0400
+@@ -887,6 +887,9 @@ int cachefiles_allocate_pages(struct fsc
+  */
+ int cachefiles_write_page(struct fscache_storage *op, struct page *page)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cachefiles_write_page();
++#endif
+ 	struct cachefiles_object *object;
+ 	struct cachefiles_cache *cache;
+ 	mm_segment_t old_fs;
+diff -rup linux-3.2.11-pax/fs/ceph/dir.c linux-3.2.11-krum-pax/fs/ceph/dir.c
+--- linux-3.2.11-pax/fs/ceph/dir.c	2012-03-16 15:56:08.527732874 -0400
++++ linux-3.2.11-krum-pax/fs/ceph/dir.c	2012-03-16 15:18:40.531443078 -0400
+@@ -238,6 +238,9 @@ static int note_last_dentry(struct ceph_
+ 
+ static int ceph_readdir(struct file *filp, void *dirent, filldir_t filldir)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ceph_readdir();
++#endif
+ 	struct ceph_file_info *fi = filp->private_data;
+ 	struct inode *inode = filp->f_dentry->d_inode;
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+diff -rup linux-3.2.11-pax/fs/cifs/cifs_debug.c linux-3.2.11-krum-pax/fs/cifs/cifs_debug.c
+--- linux-3.2.11-pax/fs/cifs/cifs_debug.c	2012-03-16 15:56:08.531066291 -0400
++++ linux-3.2.11-krum-pax/fs/cifs/cifs_debug.c	2012-03-16 15:18:39.168088630 -0400
+@@ -309,6 +309,9 @@ static ssize_t cifs_stats_proc_write(str
+ 
+ static int cifs_stats_proc_show(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cifs_stats_proc_show();
++#endif
+ 	int i;
+ 	struct list_head *tmp1, *tmp2, *tmp3;
+ 	struct TCP_Server_Info *server;
+diff -rup linux-3.2.11-pax/fs/coda/cache.c linux-3.2.11-krum-pax/fs/coda/cache.c
+--- linux-3.2.11-pax/fs/coda/cache.c	2012-03-16 15:56:08.534399656 -0400
++++ linux-3.2.11-krum-pax/fs/coda/cache.c	2012-03-16 15:18:39.214756038 -0400
+@@ -29,6 +29,9 @@ static atomic_unchecked_t permission_epo
+ /* replace or extend an acl cache hit */
+ void coda_cache_enter(struct inode *inode, int mask)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_coda_cache_enter();
++#endif
+ 	struct coda_inode_info *cii = ITOC(inode);
+ 
+ 	spin_lock(&cii->c_lock);
+@@ -44,6 +47,9 @@ void coda_cache_enter(struct inode *inod
+ /* remove cached acl from an inode */
+ void coda_cache_clear_inode(struct inode *inode)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_coda_cache_clear_inode();
++#endif
+ 	struct coda_inode_info *cii = ITOC(inode);
+ 	spin_lock(&cii->c_lock);
+ 	cii->c_cached_epoch = atomic_read_unchecked(&permission_epoch) - 1;
+@@ -60,6 +66,9 @@ void coda_cache_clear_all(struct super_b
+ /* check if the mask has been matched against the acl already */
+ int coda_cache_check(struct inode *inode, int mask)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_coda_cache_check();
++#endif
+ 	struct coda_inode_info *cii = ITOC(inode);
+ 	int hit;
+ 	
+diff -rup linux-3.2.11-pax/fs/compat_ioctl.c linux-3.2.11-krum-pax/fs/compat_ioctl.c
+--- linux-3.2.11-pax/fs/compat_ioctl.c	2012-03-16 15:56:08.541066427 -0400
++++ linux-3.2.11-krum-pax/fs/compat_ioctl.c	2012-03-16 15:18:42.008132563 -0400
+@@ -204,6 +204,9 @@ struct compat_video_spu_palette {
+ static int do_video_set_spu_palette(unsigned int fd, unsigned int cmd,
+ 		struct compat_video_spu_palette __user *up)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_video_set_spu_palette();
++#endif
+ 	struct video_spu_palette __user *up_native;
+ 	compat_uptr_t palp;
+ 	int length, err;
+@@ -608,6 +611,9 @@ struct serial_struct32 {
+ static int serial_struct_ioctl(unsigned fd, unsigned cmd,
+ 			struct serial_struct32 __user *ss32)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_serial_struct_ioctl();
++#endif
+         typedef struct serial_struct SS;
+         typedef struct serial_struct32 SS32;
+         int err;
+@@ -790,6 +796,9 @@ struct space_resv_32 {
+ static int compat_ioctl_preallocate(struct file *file,
+ 			struct space_resv_32    __user *p32)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_compat_ioctl_preallocate();
++#endif
+ 	struct space_resv	__user *p = compat_alloc_user_space(sizeof(*p));
+ 
+ 	if (copy_in_user(&p->l_type,	&p32->l_type,	sizeof(s16)) ||
+diff -rup linux-3.2.11-pax/fs/configfs/dir.c linux-3.2.11-krum-pax/fs/configfs/dir.c
+--- linux-3.2.11-pax/fs/configfs/dir.c	2012-03-16 15:56:08.541066427 -0400
++++ linux-3.2.11-krum-pax/fs/configfs/dir.c	2012-03-16 15:18:40.891448624 -0400
+@@ -1545,6 +1545,9 @@ static inline unsigned char dt_type(stru
+ 
+ static int configfs_readdir(struct file * filp, void * dirent, filldir_t filldir)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_configfs_readdir();
++#endif
+ 	struct dentry *dentry = filp->f_path.dentry;
+ 	struct configfs_dirent * parent_sd = dentry->d_fsdata;
+ 	struct configfs_dirent *cursor = filp->private_data;
+diff -rup linux-3.2.11-pax/fs/dcache.c linux-3.2.11-krum-pax/fs/dcache.c
+--- linux-3.2.11-pax/fs/dcache.c	2012-03-16 15:56:08.541066427 -0400
++++ linux-3.2.11-krum-pax/fs/dcache.c	2012-03-16 15:18:41.291454818 -0400
+@@ -3033,6 +3033,9 @@ void __init vfs_caches_init_early(void)
+ 
+ void __init vfs_caches_init(unsigned long mempages)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_vfs_caches_init();
++#endif
+ 	unsigned long reserve;
+ 
+ 	/* Base hash sizes on available memory, with a reserve equal to
+diff -rup linux-3.2.11-pax/fs/ecryptfs/inode.c linux-3.2.11-krum-pax/fs/ecryptfs/inode.c
+--- linux-3.2.11-pax/fs/ecryptfs/inode.c	2012-03-16 15:56:08.541066426 -0400
++++ linux-3.2.11-krum-pax/fs/ecryptfs/inode.c	2012-03-16 15:18:40.048102245 -0400
+@@ -677,6 +677,9 @@ out_lock:
+ static int ecryptfs_readlink_lower(struct dentry *dentry, char **buf,
+ 				   size_t *bufsiz)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ecryptfs_readlink_lower();
++#endif
+ 	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
+ 	char *lower_buf;
+ 	size_t lower_bufsiz = PATH_MAX;
+diff -rup linux-3.2.11-pax/fs/ecryptfs/read_write.c linux-3.2.11-krum-pax/fs/ecryptfs/read_write.c
+--- linux-3.2.11-pax/fs/ecryptfs/read_write.c	2012-03-16 15:56:08.541066426 -0400
++++ linux-3.2.11-krum-pax/fs/ecryptfs/read_write.c	2012-03-16 15:18:41.341455604 -0400
+@@ -39,6 +39,9 @@
+ int ecryptfs_write_lower(struct inode *ecryptfs_inode, char *data,
+ 			 loff_t offset, size_t size)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ecryptfs_write_lower();
++#endif
+ 	struct file *lower_file;
+ 	mm_segment_t fs_save;
+ 	ssize_t rc;
+@@ -235,6 +238,9 @@ out:
+ int ecryptfs_read_lower(char *data, loff_t offset, size_t size,
+ 			struct inode *ecryptfs_inode)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ecryptfs_read_lower();
++#endif
+ 	struct file *lower_file;
+ 	mm_segment_t fs_save;
+ 	ssize_t rc;
+diff -rup linux-3.2.11-pax/fs/exec.c linux-3.2.11-krum-pax/fs/exec.c
+--- linux-3.2.11-pax/fs/exec.c	2012-03-16 15:56:08.561066755 -0400
++++ linux-3.2.11-krum-pax/fs/exec.c	2012-03-16 15:18:41.971465346 -0400
+@@ -261,6 +261,9 @@ static void flush_arg_page(struct linux_
+ 
+ static int __bprm_mm_init(struct linux_binprm *bprm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___bprm_mm_init();
++#endif
+ 	int err;
+ 	struct vm_area_struct *vma = NULL;
+ 	struct mm_struct *mm = bprm->mm;
+@@ -453,6 +456,9 @@ static const char __user *get_user_arg_p
+  */
+ static int count(struct user_arg_ptr argv, int max)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_count();
++#endif
+ 	int i = 0;
+ 
+ 	if (argv.ptr.native != NULL) {
+@@ -484,6 +490,9 @@ static int count(struct user_arg_ptr arg
+ static int copy_strings(int argc, struct user_arg_ptr argv,
+ 			struct linux_binprm *bprm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_copy_strings();
++#endif
+ 	struct page *kmapped_page = NULL;
+ 	char *kaddr = NULL;
+ 	unsigned long kpos = 0;
+@@ -575,6 +584,9 @@ out:
+ int copy_strings_kernel(int argc, const char *const *__argv,
+ 			struct linux_binprm *bprm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_copy_strings_kernel();
++#endif
+ 	int r;
+ 	mm_segment_t oldfs = get_fs();
+ 	struct user_arg_ptr argv = {
+@@ -605,6 +617,9 @@ EXPORT_SYMBOL(copy_strings_kernel);
+  */
+ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_shift_arg_pages();
++#endif
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	unsigned long old_start = vma->vm_start;
+ 	unsigned long old_end = vma->vm_end;
+@@ -677,6 +692,9 @@ int setup_arg_pages(struct linux_binprm
+ 		    unsigned long stack_top,
+ 		    int executable_stack)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_setup_arg_pages();
++#endif
+ 	unsigned long ret;
+ 	unsigned long stack_shift;
+ 	struct mm_struct *mm = current->mm;
+@@ -831,6 +849,9 @@ EXPORT_SYMBOL(open_exec);
+ int kernel_read(struct file *file, loff_t offset,
+ 		char *addr, unsigned long count)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kernel_read();
++#endif
+ 	mm_segment_t old_fs;
+ 	loff_t pos = offset;
+ 	int result;
+@@ -1260,6 +1281,9 @@ EXPORT_SYMBOL(install_exec_creds);
+  */
+ int check_unsafe_exec(struct linux_binprm *bprm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_check_unsafe_exec();
++#endif
+ 	struct task_struct *p = current, *t;
+ 	unsigned n_fs;
+ 	int res = 0;
+@@ -1649,6 +1673,9 @@ EXPORT_SYMBOL(set_binfmt);
+ 
+ static int expand_corename(struct core_name *cn)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_expand_corename();
++#endif
+ 	char *old_corename = cn->corename;
+ 
+ 	cn->size = CORENAME_MAX_SIZE * atomic_inc_return_unchecked(&call_count);
+@@ -1742,6 +1769,9 @@ put_exe_file:
+  */
+ static int format_corename(struct core_name *cn, long signr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_format_corename();
++#endif
+ 	const struct cred *cred = current_cred();
+ 	const char *pat_ptr = core_pattern;
+ 	int ispipe = (*pat_ptr == '|');
+@@ -2251,6 +2281,9 @@ int get_dumpable(struct mm_struct *mm)
+ 
+ static void wait_for_dump_helpers(struct file *file)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_wait_for_dump_helpers();
++#endif
+ 	struct pipe_inode_info *pipe;
+ 
+ 	pipe = file->f_path.dentry->d_inode->i_pipe;
+@@ -2318,6 +2351,9 @@ static int umh_pipe_setup(struct subproc
+ 
+ void do_coredump(long signr, int exit_code, struct pt_regs *regs)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_coredump();
++#endif
+ 	struct core_state core_state;
+ 	struct core_name cn;
+ 	struct mm_struct *mm = current->mm;
+diff -rup linux-3.2.11-pax/fs/ext4/mballoc.c linux-3.2.11-krum-pax/fs/ext4/mballoc.c
+--- linux-3.2.11-pax/fs/ext4/mballoc.c	2012-03-16 15:56:08.561066755 -0400
++++ linux-3.2.11-krum-pax/fs/ext4/mballoc.c	2012-03-16 15:18:39.774764706 -0400
+@@ -1765,6 +1765,9 @@ static noinline_for_stack
+ void ext4_mb_simple_scan_group(struct ext4_allocation_context *ac,
+ 					struct ext4_buddy *e4b)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ext4_mb_simple_scan_group();
++#endif
+ 	struct super_block *sb = ac->ac_sb;
+ 	struct ext4_group_info *grp = e4b->bd_info;
+ 	void *buddy;
+@@ -2560,6 +2563,9 @@ static void ext4_mb_cleanup_pa(struct ex
+ 
+ int ext4_mb_release(struct super_block *sb)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ext4_mb_release();
++#endif
+ 	ext4_group_t ngroups = ext4_get_groups_count(sb);
+ 	ext4_group_t i;
+ 	int num_meta_group_infos;
+@@ -3093,6 +3099,9 @@ ext4_mb_normalize_request(struct ext4_al
+ 
+ static void ext4_mb_collect_stats(struct ext4_allocation_context *ac)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ext4_mb_collect_stats();
++#endif
+ 	struct ext4_sb_info *sbi = EXT4_SB(ac->ac_sb);
+ 
+ 	if (sbi->s_mb_stats && ac->ac_g_ex.fe_len > 1) {
+diff -rup linux-3.2.11-pax/fs/fifo.c linux-3.2.11-krum-pax/fs/fifo.c
+--- linux-3.2.11-pax/fs/fifo.c	2012-03-16 15:56:08.564400126 -0400
++++ linux-3.2.11-krum-pax/fs/fifo.c	2012-03-16 15:18:38.788082748 -0400
+@@ -32,6 +32,9 @@ static void wake_up_partner(struct inode
+ 
+ static int fifo_open(struct inode *inode, struct file *filp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fifo_open();
++#endif
+ 	struct pipe_inode_info *pipe;
+ 	int ret;
+ 
+diff -rup linux-3.2.11-pax/fs/fscache/cookie.c linux-3.2.11-krum-pax/fs/fscache/cookie.c
+--- linux-3.2.11-pax/fs/fscache/cookie.c	2012-03-16 15:56:08.571066886 -0400
++++ linux-3.2.11-krum-pax/fs/fscache/cookie.c	2012-03-16 15:18:41.551458810 -0400
+@@ -145,6 +145,9 @@ EXPORT_SYMBOL(__fscache_acquire_cookie);
+  */
+ static int fscache_acquire_non_index_cookie(struct fscache_cookie *cookie)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_acquire_non_index_cookie();
++#endif
+ 	struct fscache_object *object;
+ 	struct fscache_cache *cache;
+ 	uint64_t i_size;
+@@ -236,6 +239,9 @@ unavailable:
+ static int fscache_alloc_object(struct fscache_cache *cache,
+ 				struct fscache_cookie *cookie)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_alloc_object();
++#endif
+ 	struct fscache_object *object;
+ 	struct hlist_node *_n;
+ 	int ret;
+@@ -374,6 +380,9 @@ cant_attach_object:
+  */
+ void __fscache_update_cookie(struct fscache_cookie *cookie)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_update_cookie();
++#endif
+ 	struct fscache_object *object;
+ 	struct hlist_node *_p;
+ 
+@@ -410,6 +419,9 @@ EXPORT_SYMBOL(__fscache_update_cookie);
+  */
+ void __fscache_relinquish_cookie(struct fscache_cookie *cookie, int retire)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_relinquish_cookie();
++#endif
+ 	struct fscache_cache *cache;
+ 	struct fscache_object *object;
+ 	unsigned long event;
+diff -rup linux-3.2.11-pax/fs/fscache/object.c linux-3.2.11-krum-pax/fs/fscache/object.c
+--- linux-3.2.11-pax/fs/fscache/object.c	2012-03-16 15:56:08.574400299 -0400
++++ linux-3.2.11-krum-pax/fs/fscache/object.c	2012-03-16 15:18:41.438123730 -0400
+@@ -88,6 +88,9 @@ static inline void fscache_done_parent_o
+  */
+ static void fscache_object_state_machine(struct fscache_object *object)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_object_state_machine();
++#endif
+ 	enum fscache_object_state new_state;
+ 	struct fscache_cookie *cookie;
+ 
+@@ -435,6 +438,9 @@ static void fscache_initialise_object(st
+  */
+ static void fscache_lookup_object(struct fscache_object *object)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_lookup_object();
++#endif
+ 	struct fscache_cookie *cookie = object->cookie;
+ 	struct fscache_object *parent;
+ 	int ret;
+@@ -488,6 +494,9 @@ static void fscache_lookup_object(struct
+  */
+ void fscache_object_lookup_negative(struct fscache_object *object)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_object_lookup_negative();
++#endif
+ 	struct fscache_cookie *cookie = object->cookie;
+ 
+ 	_enter("{OBJ%x,%s}",
+@@ -532,6 +541,9 @@ EXPORT_SYMBOL(fscache_object_lookup_nega
+  */
+ void fscache_obtained_object(struct fscache_object *object)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_obtained_object();
++#endif
+ 	struct fscache_cookie *cookie = object->cookie;
+ 
+ 	_enter("{OBJ%x,%s}",
+@@ -575,6 +587,9 @@ EXPORT_SYMBOL(fscache_obtained_object);
+  */
+ static void fscache_object_available(struct fscache_object *object)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_object_available();
++#endif
+ 	_enter("{OBJ%x}", object->debug_id);
+ 
+ 	spin_lock(&object->lock);
+diff -rup linux-3.2.11-pax/fs/fscache/operation.c linux-3.2.11-krum-pax/fs/fscache/operation.c
+--- linux-3.2.11-pax/fs/fscache/operation.c	2012-03-16 15:56:08.577733659 -0400
++++ linux-3.2.11-krum-pax/fs/fscache/operation.c	2012-03-16 15:18:39.238089704 -0400
+@@ -30,6 +30,9 @@ EXPORT_SYMBOL(fscache_op_debug_id);
+  */
+ void fscache_enqueue_operation(struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_enqueue_operation();
++#endif
+ 	_enter("{OBJ%x OP%x,%u}",
+ 	       op->object->debug_id, op->debug_id, atomic_read(&op->usage));
+ 
+@@ -64,6 +67,9 @@ EXPORT_SYMBOL(fscache_enqueue_operation)
+ static void fscache_run_op(struct fscache_object *object,
+ 			   struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_run_op();
++#endif
+ 	object->n_in_progress++;
+ 	if (test_and_clear_bit(FSCACHE_OP_WAITING, &op->flags))
+ 		wake_up_bit(&op->flags, FSCACHE_OP_WAITING);
+@@ -80,6 +86,9 @@ static void fscache_run_op(struct fscach
+ int fscache_submit_exclusive_op(struct fscache_object *object,
+ 				struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_submit_exclusive_op();
++#endif
+ 	int ret;
+ 
+ 	_enter("{OBJ%x OP%x},", object->debug_id, op->debug_id);
+@@ -180,6 +189,9 @@ static void fscache_report_unexpected_su
+ int fscache_submit_op(struct fscache_object *object,
+ 		      struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_submit_op();
++#endif
+ 	unsigned long ostate;
+ 	int ret;
+ 
+@@ -285,6 +297,9 @@ void fscache_start_operations(struct fsc
+  */
+ int fscache_cancel_op(struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_cancel_op();
++#endif
+ 	struct fscache_object *object = op->object;
+ 	int ret;
+ 
+@@ -316,6 +331,9 @@ int fscache_cancel_op(struct fscache_ope
+  */
+ void fscache_put_operation(struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_put_operation();
++#endif
+ 	struct fscache_object *object;
+ 	struct fscache_cache *cache;
+ 
+@@ -386,6 +404,9 @@ EXPORT_SYMBOL(fscache_put_operation);
+  */
+ void fscache_operation_gc(struct work_struct *work)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_operation_gc();
++#endif
+ 	struct fscache_operation *op;
+ 	struct fscache_object *object;
+ 	struct fscache_cache *cache =
+diff -rup linux-3.2.11-pax/fs/fscache/page.c linux-3.2.11-krum-pax/fs/fscache/page.c
+--- linux-3.2.11-pax/fs/fscache/page.c	2012-03-16 15:56:08.577733659 -0400
++++ linux-3.2.11-krum-pax/fs/fscache/page.c	2012-03-16 15:18:39.948100695 -0400
+@@ -118,6 +118,9 @@ EXPORT_SYMBOL(__fscache_maybe_release_pa
+ static void fscache_end_page_write(struct fscache_object *object,
+ 				   struct page *page)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_end_page_write();
++#endif
+ 	struct fscache_cookie *cookie;
+ 	struct page *xpage = NULL;
+ 
+@@ -147,6 +150,9 @@ static void fscache_end_page_write(struc
+  */
+ static void fscache_attr_changed_op(struct fscache_operation *op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_attr_changed_op();
++#endif
+ 	struct fscache_object *object = op->object;
+ 	int ret;
+ 
+@@ -170,6 +176,9 @@ static void fscache_attr_changed_op(stru
+  */
+ int __fscache_attr_changed(struct fscache_cookie *cookie)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_attr_changed();
++#endif
+ 	struct fscache_operation *op;
+ 	struct fscache_object *object;
+ 
+@@ -262,6 +271,9 @@ static struct fscache_retrieval *fscache
+  */
+ static int fscache_wait_for_deferred_lookup(struct fscache_cookie *cookie)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_wait_for_deferred_lookup();
++#endif
+ 	unsigned long jif;
+ 
+ 	_enter("");
+@@ -298,6 +310,9 @@ static int fscache_wait_for_retrieval_ac
+ 						 atomic_unchecked_t *stat_op_waits,
+ 						 atomic_unchecked_t *stat_object_dead)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_wait_for_retrieval_activation();
++#endif
+ 	int ret;
+ 
+ 	if (!test_bit(FSCACHE_OP_WAITING, &op->op.flags))
+@@ -342,6 +357,9 @@ int __fscache_read_or_alloc_page(struct
+ 				 void *context,
+ 				 gfp_t gfp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_read_or_alloc_page();
++#endif
+ 	struct fscache_retrieval *op;
+ 	struct fscache_object *object;
+ 	int ret;
+@@ -461,6 +479,9 @@ int __fscache_read_or_alloc_pages(struct
+ 				  void *context,
+ 				  gfp_t gfp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_read_or_alloc_pages();
++#endif
+ 	struct fscache_retrieval *op;
+ 	struct fscache_object *object;
+ 	int ret;
+@@ -563,6 +584,9 @@ int __fscache_alloc_page(struct fscache_
+ 			 struct page *page,
+ 			 gfp_t gfp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_alloc_page();
++#endif
+ 	struct fscache_retrieval *op;
+ 	struct fscache_object *object;
+ 	int ret;
+@@ -644,6 +668,9 @@ static void fscache_release_write_op(str
+  */
+ static void fscache_write_op(struct fscache_operation *_op)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_write_op();
++#endif
+ 	struct fscache_storage *op =
+ 		container_of(_op, struct fscache_storage, op);
+ 	struct fscache_object *object = op->op.object;
+@@ -748,6 +775,9 @@ int __fscache_write_page(struct fscache_
+ 			 struct page *page,
+ 			 gfp_t gfp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_write_page();
++#endif
+ 	struct fscache_storage *op;
+ 	struct fscache_object *object;
+ 	int ret;
+@@ -869,6 +899,9 @@ EXPORT_SYMBOL(__fscache_write_page);
+  */
+ void __fscache_uncache_page(struct fscache_cookie *cookie, struct page *page)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___fscache_uncache_page();
++#endif
+ 	struct fscache_object *object;
+ 
+ 	_enter(",%p", page);
+@@ -925,6 +958,9 @@ EXPORT_SYMBOL(__fscache_uncache_page);
+ void fscache_mark_pages_cached(struct fscache_retrieval *op,
+ 			       struct pagevec *pagevec)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_mark_pages_cached();
++#endif
+ 	struct fscache_cookie *cookie = op->op.object->cookie;
+ 	unsigned long loop;
+ 
+diff -rup linux-3.2.11-pax/fs/fscache/stats.c linux-3.2.11-krum-pax/fs/fscache/stats.c
+--- linux-3.2.11-pax/fs/fscache/stats.c	2012-03-16 15:56:08.577733659 -0400
++++ linux-3.2.11-krum-pax/fs/fscache/stats.c	2012-03-16 15:18:42.151468107 -0400
+@@ -130,6 +130,9 @@ atomic_t fscache_n_cop_dissociate_pages;
+  */
+ static int fscache_stats_show(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fscache_stats_show();
++#endif
+ 	seq_puts(m, "FS-Cache statistics\n");
+ 
+ 	seq_printf(m, "Cookies: idx=%u dat=%u spc=%u\n",
+diff -rup linux-3.2.11-pax/fs/fs_struct.c linux-3.2.11-krum-pax/fs/fs_struct.c
+--- linux-3.2.11-pax/fs/fs_struct.c	2012-03-16 15:56:08.581067031 -0400
++++ linux-3.2.11-krum-pax/fs/fs_struct.c	2012-03-16 15:18:41.544792050 -0400
+@@ -101,6 +101,9 @@ void free_fs_struct(struct fs_struct *fs
+ 
+ void exit_fs(struct task_struct *tsk)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_exit_fs();
++#endif
+ 	struct fs_struct *fs = tsk->fs;
+ 
+ 	if (fs) {
+@@ -141,6 +144,9 @@ struct fs_struct *copy_fs_struct(struct
+ 
+ int unshare_fs_struct(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_unshare_fs_struct();
++#endif
+ 	struct fs_struct *fs = current->fs;
+ 	struct fs_struct *new_fs = copy_fs_struct(fs);
+ 	int kill;
+@@ -178,6 +184,9 @@ struct fs_struct init_fs = {
+ 
+ void daemonize_fs_struct(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_daemonize_fs_struct();
++#endif
+ 	struct fs_struct *fs = current->fs;
+ 
+ 	if (fs) {
+diff -rup linux-3.2.11-pax/fs/fuse/cuse.c linux-3.2.11-krum-pax/fs/fuse/cuse.c
+--- linux-3.2.11-pax/fs/fuse/cuse.c	2012-03-16 15:56:08.581067031 -0400
++++ linux-3.2.11-krum-pax/fs/fuse/cuse.c	2012-03-16 15:18:38.794749512 -0400
+@@ -580,6 +580,9 @@ static struct miscdevice cuse_miscdev =
+ 
+ static int __init cuse_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_cuse_init();
++#endif
+ 	int i, rc;
+ 
+ 	/* init conntbl */
+diff -rup linux-3.2.11-pax/fs/inode.c linux-3.2.11-krum-pax/fs/inode.c
+--- linux-3.2.11-pax/fs/inode.c	2012-03-16 15:56:08.584400419 -0400
++++ linux-3.2.11-krum-pax/fs/inode.c	2012-03-16 15:18:39.954767438 -0400
+@@ -782,6 +782,9 @@ static DEFINE_PER_CPU(unsigned int, last
+ 
+ unsigned int get_next_ino(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_get_next_ino();
++#endif
+ 	unsigned int *p = &get_cpu_var(last_ino);
+ 	unsigned int res = *p;
+ 
+diff -rup linux-3.2.11-pax/fs/jffs2/erase.c linux-3.2.11-krum-pax/fs/jffs2/erase.c
+--- linux-3.2.11-pax/fs/jffs2/erase.c	2012-03-16 15:56:08.584400419 -0400
++++ linux-3.2.11-krum-pax/fs/jffs2/erase.c	2012-03-16 15:18:41.844796701 -0400
+@@ -413,6 +413,9 @@ fail:
+ 
+ static void jffs2_mark_erased_block(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_jffs2_mark_erased_block();
++#endif
+ 	size_t retlen;
+ 	int ret;
+ 	uint32_t uninitialized_var(bad_offset);
+diff -rup linux-3.2.11-pax/fs/jfs/super.c linux-3.2.11-krum-pax/fs/jfs/super.c
+--- linux-3.2.11-pax/fs/jfs/super.c	2012-03-16 15:56:08.587733838 -0400
++++ linux-3.2.11-krum-pax/fs/jfs/super.c	2012-03-16 15:18:41.471457586 -0400
+@@ -797,6 +797,9 @@ static void init_once(void *foo)
+ 
+ static int __init init_jfs_fs(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_init_jfs_fs();
++#endif
+ 	int i;
+ 	int rc;
+ 
+diff -rup linux-3.2.11-pax/fs/libfs.c linux-3.2.11-krum-pax/fs/libfs.c
+--- linux-3.2.11-pax/fs/libfs.c	2012-03-16 15:56:08.587733838 -0400
++++ linux-3.2.11-krum-pax/fs/libfs.c	2012-03-16 15:18:39.018086318 -0400
+@@ -137,6 +137,9 @@ static inline unsigned char dt_type(stru
+ 
+ int dcache_readdir(struct file * filp, void * dirent, filldir_t filldir)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_dcache_readdir();
++#endif
+ 	struct dentry *dentry = filp->f_path.dentry;
+ 	struct dentry *cursor = filp->private_data;
+ 	struct list_head *p, *q = &cursor->d_u.d_child;
+diff -rup linux-3.2.11-pax/fs/locks.c linux-3.2.11-krum-pax/fs/locks.c
+--- linux-3.2.11-pax/fs/locks.c	2012-03-16 15:56:08.587733838 -0400
++++ linux-3.2.11-krum-pax/fs/locks.c	2012-03-16 15:18:41.804796094 -0400
+@@ -2066,6 +2066,9 @@ EXPORT_SYMBOL(locks_remove_posix);
+  */
+ void locks_remove_flock(struct file *filp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_locks_remove_flock();
++#endif
+ 	struct inode * inode = filp->f_path.dentry->d_inode;
+ 	struct file_lock *fl;
+ 	struct file_lock **before;
+diff -rup linux-3.2.11-pax/fs/namei.c linux-3.2.11-krum-pax/fs/namei.c
+--- linux-3.2.11-pax/fs/namei.c	2012-03-16 15:56:08.591067211 -0400
++++ linux-3.2.11-krum-pax/fs/namei.c	2012-03-16 15:18:38.348075946 -0400
+@@ -3242,6 +3242,9 @@ SYSCALL_DEFINE2(rename, const char __use
+ 
+ int vfs_readlink(struct dentry *dentry, char __user *buffer, int buflen, const char *link)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_vfs_readlink();
++#endif
+ 	char tmpbuf[64];
+ 	const char *newlink;
+ 	int len;
+diff -rup linux-3.2.11-pax/fs/nfs/inode.c linux-3.2.11-krum-pax/fs/nfs/inode.c
+--- linux-3.2.11-pax/fs/nfs/inode.c	2012-03-16 15:56:08.601067353 -0400
++++ linux-3.2.11-krum-pax/fs/nfs/inode.c	2012-03-16 15:18:41.018117209 -0400
+@@ -142,6 +142,9 @@ int nfs_sync_mapping(struct address_spac
+  */
+ static void nfs_zap_caches_locked(struct inode *inode)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_nfs_zap_caches_locked();
++#endif
+ 	struct nfs_inode *nfsi = NFS_I(inode);
+ 	int mode = inode->i_mode;
+ 
+@@ -997,6 +1000,9 @@ static int nfs_ctime_need_update(const s
+ 
+ static int nfs_size_need_update(const struct inode *inode, const struct nfs_fattr *fattr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_nfs_size_need_update();
++#endif
+ 	if (!(fattr->valid & NFS_ATTR_FATTR_SIZE))
+ 		return 0;
+ 	return nfs_size_to_loff_t(fattr->size) > i_size_read(inode);
+diff -rup linux-3.2.11-pax/fs/ocfs2/localalloc.c linux-3.2.11-krum-pax/fs/ocfs2/localalloc.c
+--- linux-3.2.11-pax/fs/ocfs2/localalloc.c	2012-03-16 15:56:08.614400882 -0400
++++ linux-3.2.11-krum-pax/fs/ocfs2/localalloc.c	2012-03-16 15:18:41.681460832 -0400
+@@ -1213,6 +1213,9 @@ bail:
+ static int ocfs2_local_alloc_slide_window(struct ocfs2_super *osb,
+ 					  struct inode *local_alloc_inode)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_local_alloc_slide_window();
++#endif
+ 	int status = 0;
+ 	struct buffer_head *main_bm_bh = NULL;
+ 	struct inode *main_bm_inode = NULL;
+diff -rup linux-3.2.11-pax/fs/ocfs2/suballoc.c linux-3.2.11-krum-pax/fs/ocfs2/suballoc.c
+--- linux-3.2.11-pax/fs/ocfs2/suballoc.c	2012-03-16 15:56:08.617734277 -0400
++++ linux-3.2.11-krum-pax/fs/ocfs2/suballoc.c	2012-03-16 15:18:40.381440737 -0400
+@@ -805,6 +805,9 @@ static int ocfs2_reserve_suballoc_bits(s
+ 				       u64 *last_alloc_group,
+ 				       int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_reserve_suballoc_bits();
++#endif
+ 	int status;
+ 	u32 bits_wanted = ac->ac_bits_wanted;
+ 	struct inode *alloc_inode;
+@@ -1992,6 +1995,9 @@ int ocfs2_claim_metadata(handle_t *handl
+ 			 unsigned int *num_bits,
+ 			 u64 *blkno_start)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_claim_metadata();
++#endif
+ 	int status;
+ 	struct ocfs2_suballoc_result res = { .sr_blkno = 0, };
+ 
+@@ -2125,6 +2131,9 @@ int ocfs2_claim_new_inode_at_loc(handle_
+ 				 u16 *suballoc_bit,
+ 				 u64 di_blkno)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_claim_new_inode_at_loc();
++#endif
+ 	int ret;
+ 	u16 chain;
+ 	struct ocfs2_suballoc_result *res = ac->ac_find_loc_priv;
+@@ -2195,6 +2204,9 @@ int ocfs2_claim_new_inode(handle_t *hand
+ 			  u16 *suballoc_bit,
+ 			  u64 *fe_blkno)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_claim_new_inode();
++#endif
+ 	int status;
+ 	struct ocfs2_suballoc_result res;
+ 
+@@ -2298,6 +2310,9 @@ int __ocfs2_claim_clusters(handle_t *han
+ 			   u32 *cluster_start,
+ 			   u32 *num_clusters)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___ocfs2_claim_clusters();
++#endif
+ 	int status;
+ 	unsigned int bits_wanted = max_clusters;
+ 	struct ocfs2_suballoc_result res = { .sr_blkno = 0, };
+diff -rup linux-3.2.11-pax/fs/ocfs2/super.c linux-3.2.11-krum-pax/fs/ocfs2/super.c
+--- linux-3.2.11-pax/fs/ocfs2/super.c	2012-03-16 15:56:08.617734277 -0400
++++ linux-3.2.11-krum-pax/fs/ocfs2/super.c	2012-03-16 15:18:41.664793937 -0400
+@@ -222,6 +222,9 @@ static const match_table_t tokens = {
+ #ifdef CONFIG_DEBUG_FS
+ static int ocfs2_osb_dump(struct ocfs2_super *osb, char *buf, int len)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_osb_dump();
++#endif
+ 	struct ocfs2_cluster_connection *cconn = osb->cconn;
+ 	struct ocfs2_recovery_map *rm = osb->recovery_map;
+ 	struct ocfs2_orphan_scan *os = &osb->osb_orphan_scan;
+@@ -2068,6 +2071,9 @@ static int ocfs2_initialize_super(struct
+ 				  int sector_size,
+ 				  struct ocfs2_blockcheck_stats *stats)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ocfs2_initialize_super();
++#endif
+ 	int status;
+ 	int i, cbits, bbits;
+ 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)bh->b_data;
+diff -rup linux-3.2.11-pax/fs/proc/array.c linux-3.2.11-krum-pax/fs/proc/array.c
+--- linux-3.2.11-pax/fs/proc/array.c	2012-03-16 15:56:08.621067693 -0400
++++ linux-3.2.11-krum-pax/fs/proc/array.c	2012-03-16 15:18:41.714794675 -0400
+@@ -329,6 +329,9 @@ static inline void task_context_switch_c
+ 
+ static void task_cpus_allowed(struct seq_file *m, struct task_struct *task)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_task_cpus_allowed();
++#endif
+ 	seq_puts(m, "Cpus_allowed:\t");
+ 	seq_cpumask(m, &task->cpus_allowed);
+ 	seq_putc(m, '\n');
+@@ -355,6 +358,9 @@ static inline void task_pax(struct seq_f
+ int proc_pid_status(struct seq_file *m, struct pid_namespace *ns,
+ 			struct pid *pid, struct task_struct *task)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_proc_pid_status();
++#endif
+ 	struct mm_struct *mm = get_task_mm(task);
+ 
+ 	task_name(m, task);
+diff -rup linux-3.2.11-pax/fs/proc/meminfo.c linux-3.2.11-krum-pax/fs/proc/meminfo.c
+--- linux-3.2.11-pax/fs/proc/meminfo.c	2012-03-16 15:56:08.634401225 -0400
++++ linux-3.2.11-krum-pax/fs/proc/meminfo.c	2012-03-16 15:18:39.531427575 -0400
+@@ -21,6 +21,9 @@ void __attribute__((weak)) arch_report_m
+ 
+ static int meminfo_proc_show(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_meminfo_proc_show();
++#endif
+ 	struct sysinfo i;
+ 	unsigned long committed;
+ 	unsigned long allowed;
+diff -rup linux-3.2.11-pax/fs/proc/nommu.c linux-3.2.11-krum-pax/fs/proc/nommu.c
+--- linux-3.2.11-pax/fs/proc/nommu.c	2012-03-16 15:56:08.634401225 -0400
++++ linux-3.2.11-krum-pax/fs/proc/nommu.c	2012-03-16 15:18:40.001434826 -0400
+@@ -36,6 +36,9 @@
+  */
+ static int nommu_region_show(struct seq_file *m, struct vm_region *region)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_nommu_region_show();
++#endif
+ 	unsigned long ino = 0;
+ 	struct file *file;
+ 	dev_t dev = 0;
+diff -rup linux-3.2.11-pax/fs/proc/task_mmu.c linux-3.2.11-krum-pax/fs/proc/task_mmu.c
+--- linux-3.2.11-pax/fs/proc/task_mmu.c	2012-03-16 15:56:08.637734585 -0400
++++ linux-3.2.11-krum-pax/fs/proc/task_mmu.c	2012-03-16 15:18:39.728097290 -0400
+@@ -19,6 +19,9 @@
+ 
+ void task_mem(struct seq_file *m, struct mm_struct *mm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_task_mem();
++#endif
+ 	unsigned long data, text, lib, swap;
+ 	unsigned long hiwater_vm, total_vm, hiwater_rss, total_rss;
+ 
+@@ -222,6 +225,9 @@ static int do_maps_open(struct inode *in
+ 
+ static void show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_show_map_vma();
++#endif
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	struct file *file = vma->vm_file;
+ 	vm_flags_t flags = vma->vm_flags;
+@@ -1019,6 +1025,9 @@ static int gather_hugetbl_stats(pte_t *p
+  */
+ static int show_numa_map(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_show_numa_map();
++#endif
+ 	struct numa_maps_private *numa_priv = m->private;
+ 	struct proc_maps_private *proc_priv = &numa_priv->proc_maps;
+ 	struct vm_area_struct *vma = v;
+diff -rup linux-3.2.11-pax/fs/proc/task_nommu.c linux-3.2.11-krum-pax/fs/proc/task_nommu.c
+--- linux-3.2.11-pax/fs/proc/task_nommu.c	2012-03-16 15:56:08.647734743 -0400
++++ linux-3.2.11-krum-pax/fs/proc/task_nommu.c	2012-03-16 15:18:41.978132077 -0400
+@@ -17,6 +17,9 @@
+  */
+ void task_mem(struct seq_file *m, struct mm_struct *mm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_task_mem();
++#endif
+ 	struct vm_area_struct *vma;
+ 	struct vm_region *region;
+ 	struct rb_node *p;
+@@ -136,6 +139,9 @@ static void pad_len_spaces(struct seq_fi
+  */
+ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_nommu_vma_show();
++#endif
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	unsigned long ino = 0;
+ 	struct file *file;
+diff -rup linux-3.2.11-pax/fs/reiserfs/procfs.c linux-3.2.11-krum-pax/fs/reiserfs/procfs.c
+--- linux-3.2.11-pax/fs/reiserfs/procfs.c	2012-03-16 15:56:08.657734891 -0400
++++ linux-3.2.11-krum-pax/fs/reiserfs/procfs.c	2012-03-16 15:18:40.971449871 -0400
+@@ -69,6 +69,9 @@ static int show_version(struct seq_file
+ 
+ static int show_super(struct seq_file *m, struct super_block *sb)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_show_super();
++#endif
+ 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
+ 
+ 	seq_printf(m, "state: \t%s\n"
+diff -rup linux-3.2.11-pax/fs/seq_file.c linux-3.2.11-krum-pax/fs/seq_file.c
+--- linux-3.2.11-pax/fs/seq_file.c	2012-03-16 15:56:08.661068274 -0400
++++ linux-3.2.11-krum-pax/fs/seq_file.c	2012-03-16 15:18:41.564792362 -0400
+@@ -64,6 +64,9 @@ EXPORT_SYMBOL(seq_open);
+ 
+ static int traverse(struct seq_file *m, loff_t offset)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_traverse();
++#endif
+ 	loff_t pos = 0, index;
+ 	int error = 0;
+ 	void *p;
+diff -rup linux-3.2.11-pax/fs/splice.c linux-3.2.11-krum-pax/fs/splice.c
+--- linux-3.2.11-pax/fs/splice.c	2012-03-16 15:56:08.661068274 -0400
++++ linux-3.2.11-krum-pax/fs/splice.c	2012-03-16 15:18:40.334773321 -0400
+@@ -1717,6 +1717,9 @@ SYSCALL_DEFINE6(splice, int, fd_in, loff
+  */
+ static int ipipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ipipe_prep();
++#endif
+ 	int ret;
+ 
+ 	/*
+@@ -1755,6 +1758,9 @@ static int ipipe_prep(struct pipe_inode_
+  */
+ static int opipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_opipe_prep();
++#endif
+ 	int ret;
+ 
+ 	/*
+@@ -1912,6 +1918,9 @@ static int link_pipe(struct pipe_inode_i
+ 		     struct pipe_inode_info *opipe,
+ 		     size_t len, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_link_pipe();
++#endif
+ 	struct pipe_buffer *ibuf, *obuf;
+ 	int ret = 0, i = 0, nbuf;
+ 
+diff -rup linux-3.2.11-pax/fs/sysfs/file.c linux-3.2.11-krum-pax/fs/sysfs/file.c
+--- linux-3.2.11-pax/fs/sysfs/file.c	2012-03-16 15:56:08.661068274 -0400
++++ linux-3.2.11-krum-pax/fs/sysfs/file.c	2012-03-16 15:18:40.154770551 -0400
+@@ -66,6 +66,9 @@ struct sysfs_buffer {
+  */
+ static int fill_read_buffer(struct dentry * dentry, struct sysfs_buffer * buffer)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_fill_read_buffer();
++#endif
+ 	struct sysfs_dirent *attr_sd = dentry->d_fsdata;
+ 	struct kobject *kobj = attr_sd->s_parent->s_dir.kobj;
+ 	const struct sysfs_ops * ops = buffer->ops;
+@@ -258,6 +261,9 @@ sysfs_write_file(struct file *file, cons
+ static int sysfs_get_open_dirent(struct sysfs_dirent *sd,
+ 				 struct sysfs_buffer *buffer)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_sysfs_get_open_dirent();
++#endif
+ 	struct sysfs_open_dirent *od, *new_od = NULL;
+ 
+  retry:
+@@ -420,6 +426,9 @@ static int sysfs_release(struct inode *i
+  */
+ static unsigned int sysfs_poll(struct file *filp, poll_table *wait)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_sysfs_poll();
++#endif
+ 	struct sysfs_buffer * buffer = filp->private_data;
+ 	struct sysfs_dirent *attr_sd = filp->f_path.dentry->d_fsdata;
+ 	struct sysfs_open_dirent *od = attr_sd->s_attr.open;
+@@ -444,6 +453,9 @@ static unsigned int sysfs_poll(struct fi
+ 
+ void sysfs_notify_dirent(struct sysfs_dirent *sd)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_sysfs_notify_dirent();
++#endif
+ 	struct sysfs_open_dirent *od;
+ 	unsigned long flags;
+ 
+Only in linux-3.2.11-krum-pax/: gabrovski@hooker.cs.dartmouth.edu
+diff -rup linux-3.2.11-pax/include/linux/security.h linux-3.2.11-krum-pax/include/linux/security.h
+--- linux-3.2.11-pax/include/linux/security.h	2012-03-13 13:05:09.000000000 -0400
++++ linux-3.2.11-krum-pax/include/linux/security.h	2012-03-16 15:18:42.428139068 -0400
+@@ -50,6 +50,10 @@ struct ctl_table;
+ struct audit_krule;
+ struct user_namespace;
+ 
++//sasho
++extern int krum_pid_of_interest;
++
++
+ /*
+  * These functions are in security/capability.c and are used
+  * as the default capabilities functions
+@@ -1646,6 +1650,8 @@ struct security_operations {
+ 			       key_perm_t perm);
+ 	int (*key_getsecurity)(struct key *key, char **_buffer);
+ #endif	/* CONFIG_KEYS */
++  //sasho
++  void (*krum_hook) (void);
+ 
+ #ifdef CONFIG_AUDIT
+ 	int (*audit_rule_init) (u32 field, u32 op, char *rulestr, void **lsmrule);
+@@ -1654,8 +1660,459 @@ struct security_operations {
+ 				 struct audit_context *actx);
+ 	void (*audit_rule_free) (void *lsmrule);
+ #endif /* CONFIG_AUDIT */
++	 void (*krum_audit_receive_msg) (void);
++	 void (*krum_swaps_open) (void);
++	 void (*krum_configfs_readdir) (void);
++	 void (*krum_ocfs2_osb_dump) (void);
++	 void (*krum___memory_failure) (void);
++	 void (*krum_cachefiles_daemon_bstop) (void);
++	 void (*krum_exit_mmap) (void);
++	 void (*krum_cachefiles_write_page) (void);
++	 void (*krum_arch_unmap_area_topdown) (void);
++	 void (*krum___fscache_read_or_alloc_pages) (void);
++	 void (*krum_link_pipe) (void);
++	 void (*krum_locks_remove_flock) (void);
++	 void (*krum_ecryptfs_readlink_lower) (void);
++	 void (*krum_install_special_mapping) (void);
++	 void (*krum_bstr_printf) (void);
++	 void (*krum_befs_put_link) (void);
++	 void (*krum_m_show) (void);
++	 void (*krum_rcu_nmi_exit) (void);
++	 void (*krum_prep_new_page) (void);
++	 void (*krum_timer_stats_update_stats) (void);
++	 void (*krum_cachefiles_histogram_show) (void);
++	 void (*krum_nfs_zap_caches_locked) (void);
++	 void (*krum_flush_module_icache) (void);
++	 void (*krum_fill_read_buffer) (void);
++	 void (*krum_task_mem) (void);
++	 void (*krum_mbind_range) (void);
++	 void (*krum_shift_arg_pages) (void);
++	 void (*krum_hrtimer_peek_ahead_timers) (void);
++	 void (*krum___fscache_write_page) (void);
++	 void (*krum_insert_page) (void);
++	 void (*krum_kill_proc_ao) (void);
++	 void (*krum___lock_acquire) (void);
++	 void (*krum_vunmap_pte_range) (void);
++	 void (*krum_kmem_cache_free) (void);
++	 void (*krum_simplify_symbols) (void);
++	 void (*krum_fscache_wait_for_deferred_lookup) (void);
++	 void (*krum_autofs4_write) (void);
++	 void (*krum_cachefiles_daemon_fstop) (void);
++	 void (*krum_ocfs2_reserve_suballoc_bits) (void);
++	 void (*krum_perf_proc_update_handler) (void);
++	 void (*krum_copy_fs) (void);
++	 void (*krum_layout_symtab) (void);
++	 void (*krum_coda_cache_enter) (void);
++	 void (*krum_fscache_submit_exclusive_op) (void);
++	 void (*krum_sysfs_get_open_dirent) (void);
++	 void (*krum_fscache_alloc_object) (void);
++	 void (*krum_schedule_rt_mutex_test) (void);
++	 void (*krum_tasklet_action) (void);
++	 void (*krum_padata_do_parallel) (void);
++	 void (*krum_ecryptfs_write_lower) (void);
++	 void (*krum_fscache_enqueue_operation) (void);
++	 void (*krum_kfree) (void);
++	 void (*krum_fscache_object_available) (void);
++	 void (*krum_unshare_fs) (void);
++	 void (*krum_insert_vm_struct) (void);
++	 void (*krum_flush_all_zero_pkmaps) (void);
++	 void (*krum_init_jfs_fs) (void);
++	 void (*krum_load_flat_file) (void);
++	 void (*krum_ocfs2_claim_metadata) (void);
++	 void (*krum_anon_vma_prepare) (void);
++	 void (*krum_kmem_cache_bootstrap_fixup) (void);
++	 void (*krum_show_kprobe_addr) (void);
++	 void (*krum_traverse) (void);
++	 void (*krum_debug_object_is_on_stack) (void);
++	 void (*krum_profile_flip_buffers) (void);
++	 void (*krum_opipe_prep) (void);
++	 void (*krum_unmap_ref_private) (void);
++	 void (*krum_ocfs2_initialize_super) (void);
++	 void (*krum_ocfs2_claim_new_inode_at_loc) (void);
++	 void (*krum_fscache_object_lookup_negative) (void);
++	 void (*krum_is_vmalloc_or_module_addr) (void);
++	 void (*krum___fscache_update_cookie) (void);
++	 void (*krum_s_show) (void);
++	 void (*krum_ocfs2_claim_new_inode) (void);
++	 void (*krum_fill_auxv_note) (void);
++	 void (*krum_audit_log_lost) (void);
++	 void (*krum_nfs_size_need_update) (void);
++	 void (*krum_coda_cache_check) (void);
++	 void (*krum_copy_strings_kernel) (void);
++	 void (*krum_perf_event_mmap_event) (void);
++	 void (*krum_fscache_lookup_object) (void);
++	 void (*krum_tstats_show) (void);
++	 void (*krum___update_reloc_root) (void);
++	 void (*krum_meminfo_proc_show) (void);
++	 void (*krum_dcache_readdir) (void);
++	 void (*krum___fscache_read_or_alloc_page) (void);
++	 void (*krum_vm_insert_mixed) (void);
++	 void (*krum_smack_inode_getsecctx) (void);
++	 void (*krum_kallsyms_open) (void);
++	 void (*krum_vfs_caches_init) (void);
++	 void (*krum_rcu_exit_nohz) (void);
++	 void (*krum_expand_upwards) (void);
++	 void (*krum_sysfs_notify_dirent) (void);
++	 void (*krum___bprm_mm_init) (void);
++	 void (*krum_kmem_cache_init) (void);
++	 void (*krum_free) (void);
++	 void (*krum_proc_pid_status) (void);
++	 void (*krum_handle_op) (void);
++	 void (*krum_remap_vmalloc_range) (void);
++	 void (*krum___rcu_process_callbacks) (void);
++	 void (*krum_ext4_mb_collect_stats) (void);
++	 void (*krum_fscache_stats_show) (void);
++	 void (*krum_show_numa_map) (void);
++	 void (*krum_soft_offline_huge_page) (void);
++	 void (*krum_fscache_object_state_machine) (void);
++	 void (*krum_fscache_put_operation) (void);
++	 void (*krum_add_kallsyms) (void);
++	 void (*krum_fscache_end_page_write) (void);
++	 void (*krum_remove_vma_list) (void);
++	 void (*krum_gate_vma_init) (void);
++	 void (*krum_module_deallocate) (void);
++	 void (*krum_do_mlock) (void);
++	 void (*krum_kernel_read) (void);
++	 void (*krum_cuse_init) (void);
++	 void (*krum_static_obj) (void);
++	 void (*krum_task_cpus_allowed) (void);
++	 void (*krum_wait_for_helper) (void);
++	 void (*krum_aio_setup_ring) (void);
++	 void (*krum_cifs_stats_proc_show) (void);
++	 void (*krum_set_all_modules_text_rw) (void);
++	 void (*krum_soft_offline_page) (void);
++	 void (*krum_ceph_readdir) (void);
++	 void (*krum_fscache_write_op) (void);
++	 void (*krum_cachefiles_daemon_bind) (void);
++	 void (*krum_set_brk) (void);
++	 void (*krum_init_kprobes) (void);
++	 void (*krum_ipipe_prep) (void);
++	 void (*krum_fscache_wait_for_retrieval_activation) (void);
++	 void (*krum___fscache_uncache_page) (void);
++	 void (*krum_refresh_cpu_vm_stats) (void);
++	 void (*krum_ima_add_digest_entry) (void);
++	 void (*krum_show_super) (void);
++	 void (*krum___do_proc_doulongvec_minmax) (void);
++	 void (*krum_futex_init) (void);
++	 void (*krum_ext4_mb_release) (void);
++	 void (*krum_gcov_module_notifier) (void);
++	 void (*krum___put_compound_page) (void);
++	 void (*krum_set_all_modules_text_ro) (void);
++	 void (*krum___fscache_attr_changed) (void);
++	 void (*krum_unpoison_memory) (void);
++	 void (*krum_move_ptes) (void);
++	 void (*krum___ocfs2_claim_clusters) (void);
++	 void (*krum_split_vma) (void);
++	 void (*krum_coda_cache_clear_inode) (void);
++	 void (*krum_move_module) (void);
++	 void (*krum_sync_child_event) (void);
++	 void (*krum___fscache_relinquish_cookie) (void);
++	 void (*krum_fscache_obtained_object) (void);
++	 void (*krum_tick_device_uses_broadcast) (void);
++	 void (*krum_perf_output_read_one) (void);
++	 void (*krum_check_unsafe_exec) (void);
++	 void (*krum_fscache_operation_gc) (void);
++	 void (*krum_posix_timers_register_clock) (void);
++	 void (*krum_dup_mmap) (void);
++	 void (*krum_fscache_acquire_non_index_cookie) (void);
++	 void (*krum_ecryptfs_read_lower) (void);
++	 void (*krum_reset_entries) (void);
++	 void (*krum_bio_copy_kern_endio) (void);
++	 void (*krum_exit_fs) (void);
++	 void (*krum_load_elf_binary) (void);
++	 void (*krum_setup_arg_pages) (void);
++	 void (*krum_show_map_vma) (void);
++	 void (*krum_collect_one_slot) (void);
++	 void (*krum_count) (void);
++	 void (*krum___fscache_alloc_page) (void);
++	 void (*krum_layout_sections) (void);
++	 void (*krum_fscache_attr_changed_op) (void);
++	 void (*krum_compat_ioctl_preallocate) (void);
++	 void (*krum_serial_struct_ioctl) (void);
++	 void (*krum_free_module) (void);
++	 void (*krum___bitmap_parse) (void);
++	 void (*krum_devm_ioport_unmap) (void);
++	 void (*krum_ocfs2_local_alloc_slide_window) (void);
++	 void (*krum_rcu_nmi_enter) (void);
++	 void (*krum_rcu_implicit_dynticks_qs) (void);
++	 void (*krum_ima_add_violation) (void);
++	 void (*krum_daemonize_fs_struct) (void);
++	 void (*krum_check_modinfo) (void);
++	 void (*krum_hugetlb_fault) (void);
++	 void (*krum___do_fault) (void);
++	 void (*krum_kmem_cache_open) (void);
++	 void (*krum_raise_softirq) (void);
++	 void (*krum_alarmtimer_init) (void);
++	 void (*krum_proc_put_long) (void);
++	 void (*krum_shmem_fill_super) (void);
++	 void (*krum_vfs_readlink) (void);
++	 void (*krum_do_profile_hits) (void);
++	 void (*krum_sysfs_poll) (void);
++	 void (*krum_rcu_enter_nohz) (void);
++	 void (*krum_expand_corename) (void);
++	 void (*krum_get_next_ino) (void);
++	 void (*krum_vmap_pte_range) (void);
++	 void (*krum_nommu_vma_show) (void);
++	 void (*krum_init_posix_timers) (void);
++	 void (*krum_generic_file_mmap) (void);
++	 void (*krum_register_security) (void);
++	 void (*krum_load_aout_binary) (void);
++	 void (*krum_format_corename) (void);
++	 void (*krum_panic) (void);
++	 void (*krum_ext4_mb_simple_scan_group) (void);
++	 void (*krum_jffs2_mark_erased_block) (void);
++	 void (*krum_slab_unmergeable) (void);
++	 void (*krum_do_swap_page) (void);
++	 void (*krum_fscache_submit_op) (void);
++	 void (*krum_fscache_mark_pages_cached) (void);
++	 void (*krum_wait_for_dump_helpers) (void);
++	 void (*krum_fifo_open) (void);
++	 void (*krum_change_protection) (void);
++	 void (*krum_nommu_region_show) (void);
++	 void (*krum___bitmap_parselist) (void);
++	 void (*krum_fscache_cancel_op) (void);
++	 void (*krum_do_acct_process) (void);
++	 void (*krum___split_vma) (void);
++	 void (*krum_do_coredump) (void);
++	 void (*krum_unshare_fs_struct) (void);
++	 void (*krum_handle_mm_fault) (void);
++	 void (*krum_do_anonymous_page) (void);
++	 void (*krum_allow_signal) (void);
++	 void (*krum_do_munmap) (void);
++	 void (*krum_expand_downwards) (void);
++	 void (*krum_do_video_set_spu_palette) (void);
++	 void (*krum_copy_strings) (void);
++	 void (*krum_jump_label_invalidate_module_init) (void);
++	 void (*krum_fscache_run_op) (void);
++	 void (*krum_handle_pte_fault) (void);
+ };
+ 
++void security_krum_audit_receive_msg(void);
++void security_krum_swaps_open(void);
++void security_krum_configfs_readdir(void);
++void security_krum_ocfs2_osb_dump(void);
++void security_krum___memory_failure(void);
++void security_krum_cachefiles_daemon_bstop(void);
++void security_krum_exit_mmap(void);
++void security_krum_cachefiles_write_page(void);
++void security_krum_arch_unmap_area_topdown(void);
++void security_krum___fscache_read_or_alloc_pages(void);
++void security_krum_link_pipe(void);
++void security_krum_locks_remove_flock(void);
++void security_krum_ecryptfs_readlink_lower(void);
++void security_krum_install_special_mapping(void);
++void security_krum_bstr_printf(void);
++void security_krum_befs_put_link(void);
++void security_krum_m_show(void);
++void security_krum_rcu_nmi_exit(void);
++void security_krum_prep_new_page(void);
++void security_krum_timer_stats_update_stats(void);
++void security_krum_cachefiles_histogram_show(void);
++void security_krum_nfs_zap_caches_locked(void);
++void security_krum_flush_module_icache(void);
++void security_krum_fill_read_buffer(void);
++void security_krum_task_mem(void);
++void security_krum_mbind_range(void);
++void security_krum_shift_arg_pages(void);
++void security_krum_hrtimer_peek_ahead_timers(void);
++void security_krum___fscache_write_page(void);
++void security_krum_insert_page(void);
++void security_krum_kill_proc_ao(void);
++void security_krum___lock_acquire(void);
++void security_krum_vunmap_pte_range(void);
++void security_krum_kmem_cache_free(void);
++void security_krum_simplify_symbols(void);
++void security_krum_fscache_wait_for_deferred_lookup(void);
++void security_krum_autofs4_write(void);
++void security_krum_cachefiles_daemon_fstop(void);
++void security_krum_ocfs2_reserve_suballoc_bits(void);
++void security_krum_perf_proc_update_handler(void);
++void security_krum_copy_fs(void);
++void security_krum_layout_symtab(void);
++void security_krum_coda_cache_enter(void);
++void security_krum_fscache_submit_exclusive_op(void);
++void security_krum_sysfs_get_open_dirent(void);
++void security_krum_fscache_alloc_object(void);
++void security_krum_schedule_rt_mutex_test(void);
++void security_krum_tasklet_action(void);
++void security_krum_padata_do_parallel(void);
++void security_krum_ecryptfs_write_lower(void);
++void security_krum_fscache_enqueue_operation(void);
++void security_krum_kfree(void);
++void security_krum_fscache_object_available(void);
++void security_krum_unshare_fs(void);
++void security_krum_insert_vm_struct(void);
++void security_krum_flush_all_zero_pkmaps(void);
++void security_krum_init_jfs_fs(void);
++void security_krum_load_flat_file(void);
++void security_krum_ocfs2_claim_metadata(void);
++void security_krum_anon_vma_prepare(void);
++void security_krum_kmem_cache_bootstrap_fixup(void);
++void security_krum_show_kprobe_addr(void);
++void security_krum_traverse(void);
++void security_krum_debug_object_is_on_stack(void);
++void security_krum_profile_flip_buffers(void);
++void security_krum_opipe_prep(void);
++void security_krum_unmap_ref_private(void);
++void security_krum_ocfs2_initialize_super(void);
++void security_krum_ocfs2_claim_new_inode_at_loc(void);
++void security_krum_fscache_object_lookup_negative(void);
++void security_krum_is_vmalloc_or_module_addr(void);
++void security_krum___fscache_update_cookie(void);
++void security_krum_s_show(void);
++void security_krum_ocfs2_claim_new_inode(void);
++void security_krum_fill_auxv_note(void);
++void security_krum_audit_log_lost(void);
++void security_krum_nfs_size_need_update(void);
++void security_krum_coda_cache_check(void);
++void security_krum_copy_strings_kernel(void);
++void security_krum_perf_event_mmap_event(void);
++void security_krum_fscache_lookup_object(void);
++void security_krum_tstats_show(void);
++void security_krum___update_reloc_root(void);
++void security_krum_meminfo_proc_show(void);
++void security_krum_dcache_readdir(void);
++void security_krum___fscache_read_or_alloc_page(void);
++void security_krum_vm_insert_mixed(void);
++void security_krum_smack_inode_getsecctx(void);
++void security_krum_kallsyms_open(void);
++void security_krum_vfs_caches_init(void);
++void security_krum_rcu_exit_nohz(void);
++void security_krum_expand_upwards(void);
++void security_krum_sysfs_notify_dirent(void);
++void security_krum___bprm_mm_init(void);
++void security_krum_kmem_cache_init(void);
++void security_krum_free(void);
++void security_krum_proc_pid_status(void);
++void security_krum_handle_op(void);
++void security_krum_remap_vmalloc_range(void);
++void security_krum___rcu_process_callbacks(void);
++void security_krum_ext4_mb_collect_stats(void);
++void security_krum_fscache_stats_show(void);
++void security_krum_show_numa_map(void);
++void security_krum_soft_offline_huge_page(void);
++void security_krum_fscache_object_state_machine(void);
++void security_krum_fscache_put_operation(void);
++void security_krum_add_kallsyms(void);
++void security_krum_fscache_end_page_write(void);
++void security_krum_remove_vma_list(void);
++void security_krum_gate_vma_init(void);
++void security_krum_module_deallocate(void);
++void security_krum_do_mlock(void);
++void security_krum_kernel_read(void);
++void security_krum_cuse_init(void);
++void security_krum_static_obj(void);
++void security_krum_task_cpus_allowed(void);
++void security_krum_wait_for_helper(void);
++void security_krum_aio_setup_ring(void);
++void security_krum_cifs_stats_proc_show(void);
++void security_krum_set_all_modules_text_rw(void);
++void security_krum_soft_offline_page(void);
++void security_krum_ceph_readdir(void);
++void security_krum_fscache_write_op(void);
++void security_krum_cachefiles_daemon_bind(void);
++void security_krum_set_brk(void);
++void security_krum_init_kprobes(void);
++void security_krum_ipipe_prep(void);
++void security_krum_fscache_wait_for_retrieval_activation(void);
++void security_krum___fscache_uncache_page(void);
++void security_krum_refresh_cpu_vm_stats(void);
++void security_krum_ima_add_digest_entry(void);
++void security_krum_show_super(void);
++void security_krum___do_proc_doulongvec_minmax(void);
++void security_krum_futex_init(void);
++void security_krum_ext4_mb_release(void);
++void security_krum_gcov_module_notifier(void);
++void security_krum___put_compound_page(void);
++void security_krum_set_all_modules_text_ro(void);
++void security_krum___fscache_attr_changed(void);
++void security_krum_unpoison_memory(void);
++void security_krum_move_ptes(void);
++void security_krum___ocfs2_claim_clusters(void);
++void security_krum_split_vma(void);
++void security_krum_coda_cache_clear_inode(void);
++void security_krum_move_module(void);
++void security_krum_sync_child_event(void);
++void security_krum___fscache_relinquish_cookie(void);
++void security_krum_fscache_obtained_object(void);
++void security_krum_tick_device_uses_broadcast(void);
++void security_krum_perf_output_read_one(void);
++void security_krum_check_unsafe_exec(void);
++void security_krum_fscache_operation_gc(void);
++void security_krum_posix_timers_register_clock(void);
++void security_krum_dup_mmap(void);
++void security_krum_fscache_acquire_non_index_cookie(void);
++void security_krum_ecryptfs_read_lower(void);
++void security_krum_reset_entries(void);
++void security_krum_bio_copy_kern_endio(void);
++void security_krum_exit_fs(void);
++void security_krum_load_elf_binary(void);
++void security_krum_setup_arg_pages(void);
++void security_krum_show_map_vma(void);
++void security_krum_collect_one_slot(void);
++void security_krum_count(void);
++void security_krum___fscache_alloc_page(void);
++void security_krum_layout_sections(void);
++void security_krum_fscache_attr_changed_op(void);
++void security_krum_compat_ioctl_preallocate(void);
++void security_krum_serial_struct_ioctl(void);
++void security_krum_free_module(void);
++void security_krum___bitmap_parse(void);
++void security_krum_devm_ioport_unmap(void);
++void security_krum_ocfs2_local_alloc_slide_window(void);
++void security_krum_rcu_nmi_enter(void);
++void security_krum_rcu_implicit_dynticks_qs(void);
++void security_krum_ima_add_violation(void);
++void security_krum_daemonize_fs_struct(void);
++void security_krum_check_modinfo(void);
++void security_krum_hugetlb_fault(void);
++void security_krum___do_fault(void);
++void security_krum_kmem_cache_open(void);
++void security_krum_raise_softirq(void);
++void security_krum_alarmtimer_init(void);
++void security_krum_proc_put_long(void);
++void security_krum_shmem_fill_super(void);
++void security_krum_vfs_readlink(void);
++void security_krum_do_profile_hits(void);
++void security_krum_sysfs_poll(void);
++void security_krum_rcu_enter_nohz(void);
++void security_krum_expand_corename(void);
++void security_krum_get_next_ino(void);
++void security_krum_vmap_pte_range(void);
++void security_krum_nommu_vma_show(void);
++void security_krum_init_posix_timers(void);
++void security_krum_generic_file_mmap(void);
++void security_krum_register_security(void);
++void security_krum_load_aout_binary(void);
++void security_krum_format_corename(void);
++void security_krum_panic(void);
++void security_krum_ext4_mb_simple_scan_group(void);
++void security_krum_jffs2_mark_erased_block(void);
++void security_krum_slab_unmergeable(void);
++void security_krum_do_swap_page(void);
++void security_krum_fscache_submit_op(void);
++void security_krum_fscache_mark_pages_cached(void);
++void security_krum_wait_for_dump_helpers(void);
++void security_krum_fifo_open(void);
++void security_krum_change_protection(void);
++void security_krum_nommu_region_show(void);
++void security_krum___bitmap_parselist(void);
++void security_krum_fscache_cancel_op(void);
++void security_krum_do_acct_process(void);
++void security_krum___split_vma(void);
++void security_krum_do_coredump(void);
++void security_krum_unshare_fs_struct(void);
++void security_krum_handle_mm_fault(void);
++void security_krum_do_anonymous_page(void);
++void security_krum_allow_signal(void);
++void security_krum_do_munmap(void);
++void security_krum_expand_downwards(void);
++void security_krum_do_video_set_spu_palette(void);
++void security_krum_copy_strings(void);
++void security_krum_jump_label_invalidate_module_init(void);
++void security_krum_fscache_run_op(void);
++void security_krum_handle_pte_fault(void);
++
+ /* prototypes */
+ extern int security_init(void);
+ extern int security_module_enable(struct security_operations *ops);
+@@ -1664,6 +2121,10 @@ extern void __init security_fixup_ops(st
+ 
+ 
+ /* Security operations */
++
++//sasho
++void security_krum_hook(void);
++
+ int security_ptrace_access_check(struct task_struct *child, unsigned int mode);
+ int security_ptrace_traceme(struct task_struct *parent);
+ int security_capget(struct task_struct *target,
+@@ -1846,6 +2307,12 @@ static inline int security_init(void)
+ 	return 0;
+ }
+ 
++//sasho
++static inline void security_krum_hook(void)
++{
++  return ;
++}
++
+ static inline int security_ptrace_access_check(struct task_struct *child,
+ 					     unsigned int mode)
+ {
+Only in linux-3.2.11-krum-pax/include/linux: security.h~
+diff -rup linux-3.2.11-pax/kernel/acct.c linux-3.2.11-krum-pax/kernel/acct.c
+--- linux-3.2.11-pax/kernel/acct.c	2012-03-16 15:56:09.051074336 -0400
++++ linux-3.2.11-krum-pax/kernel/acct.c	2012-03-16 15:18:39.811431906 -0400
+@@ -474,6 +474,9 @@ static u32 encode_float(u64 value)
+ static void do_acct_process(struct bsd_acct_struct *acct,
+ 		struct pid_namespace *ns, struct file *file)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_acct_process();
++#endif
+ 	struct pacct_struct *pacct = &current->signal->pacct;
+ 	acct_t ac;
+ 	mm_segment_t fs;
+diff -rup linux-3.2.11-pax/kernel/audit.c linux-3.2.11-krum-pax/kernel/audit.c
+--- linux-3.2.11-pax/kernel/audit.c	2012-03-16 15:56:09.051074336 -0400
++++ linux-3.2.11-krum-pax/kernel/audit.c	2012-03-16 15:18:38.168073179 -0400
+@@ -231,6 +231,9 @@ static inline int audit_rate_check(void)
+ */
+ void audit_log_lost(const char *message)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_audit_log_lost();
++#endif
+ 	static unsigned long	last_msg = 0;
+ 	static DEFINE_SPINLOCK(lock);
+ 	unsigned long		flags;
+@@ -648,6 +651,9 @@ static int audit_log_common_recv_msg(str
+ 
+ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_audit_receive_msg();
++#endif
+ 	u32			uid, pid, seq, sid;
+ 	void			*data;
+ 	struct audit_status	*status_get, status_set;
+diff -rup linux-3.2.11-pax/kernel/events/core.c linux-3.2.11-krum-pax/kernel/events/core.c
+--- linux-3.2.11-pax/kernel/events/core.c	2012-03-16 15:56:09.081074765 -0400
++++ linux-3.2.11-krum-pax/kernel/events/core.c	2012-03-16 15:18:40.781446915 -0400
+@@ -163,6 +163,9 @@ int perf_proc_update_handler(struct ctl_
+ 		void __user *buffer, size_t *lenp,
+ 		loff_t *ppos)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_perf_proc_update_handler();
++#endif
+ 	int ret = proc_dointvec(table, write, buffer, lenp, ppos);
+ 
+ 	if (ret || !write)
+@@ -3899,6 +3902,9 @@ static void perf_output_read_one(struct
+ 				 struct perf_event *event,
+ 				 u64 enabled, u64 running)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_perf_output_read_one();
++#endif
+ 	u64 read_format = event->attr.read_format;
+ 	u64 values[4];
+ 	int n = 0;
+@@ -4542,6 +4548,9 @@ static void perf_event_mmap_ctx(struct p
+ 
+ static void perf_event_mmap_event(struct perf_mmap_event *mmap_event)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_perf_event_mmap_event();
++#endif
+ 	struct perf_cpu_context *cpuctx;
+ 	struct perf_event_context *ctx;
+ 	struct vm_area_struct *vma = mmap_event->vma;
+@@ -6432,6 +6441,9 @@ EXPORT_SYMBOL_GPL(perf_event_create_kern
+ static void sync_child_event(struct perf_event *child_event,
+ 			       struct task_struct *child)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_sync_child_event();
++#endif
+ 	struct perf_event *parent_event = child_event->parent;
+ 	u64 child_val;
+ 
+diff -rup linux-3.2.11-pax/kernel/exit.c linux-3.2.11-krum-pax/kernel/exit.c
+--- linux-3.2.11-pax/kernel/exit.c	2012-03-16 15:56:09.081074765 -0400
++++ linux-3.2.11-krum-pax/kernel/exit.c	2012-03-16 15:18:41.308121717 -0400
+@@ -369,6 +369,9 @@ static void set_special_pids(struct pid
+  */
+ int allow_signal(int sig)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_allow_signal();
++#endif
+ 	if (!valid_signal(sig) || sig < 1)
+ 		return -EINVAL;
+ 
+diff -rup linux-3.2.11-pax/kernel/fork.c linux-3.2.11-krum-pax/kernel/fork.c
+--- linux-3.2.11-pax/kernel/fork.c	2012-03-16 15:56:09.081074765 -0400
++++ linux-3.2.11-krum-pax/kernel/fork.c	2012-03-16 15:18:38.151406242 -0400
+@@ -373,6 +373,9 @@ fail_nomem:
+ 
+ static int dup_mmap(struct mm_struct *mm, struct mm_struct *oldmm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_dup_mmap();
++#endif
+ 	struct vm_area_struct *mpnt, *tmp, *prev, **pprev;
+ 	struct rb_node **rb_link, *rb_parent;
+ 	int retval;
+@@ -859,6 +862,9 @@ fail_nomem:
+ 
+ static int copy_fs(unsigned long clone_flags, struct task_struct *tsk)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_copy_fs();
++#endif
+ 	struct fs_struct *fs = current->fs;
+ 	if (clone_flags & CLONE_FS) {
+ 		/* tsk->fs is already what we want */
+@@ -1661,6 +1667,9 @@ static int check_unshare_flags(unsigned
+  */
+ static int unshare_fs(unsigned long unshare_flags, struct fs_struct **new_fsp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_unshare_fs();
++#endif
+ 	struct fs_struct *fs = current->fs;
+ 
+ 	if (!(unshare_flags & CLONE_FS) || !fs)
+diff -rup linux-3.2.11-pax/kernel/futex.c linux-3.2.11-krum-pax/kernel/futex.c
+--- linux-3.2.11-pax/kernel/futex.c	2012-03-16 15:56:09.084408157 -0400
++++ linux-3.2.11-krum-pax/kernel/futex.c	2012-03-16 15:18:40.241438576 -0400
+@@ -2727,6 +2727,9 @@ SYSCALL_DEFINE6(futex, u32 __user *, uad
+ 
+ static int __init futex_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_futex_init();
++#endif
+ 	u32 curval;
+ 	int i;
+ 	mm_segment_t oldfs;
+diff -rup linux-3.2.11-pax/kernel/gcov/base.c linux-3.2.11-krum-pax/kernel/gcov/base.c
+--- linux-3.2.11-pax/kernel/gcov/base.c	2012-03-16 15:56:09.084408157 -0400
++++ linux-3.2.11-krum-pax/kernel/gcov/base.c	2012-03-16 15:18:40.204771337 -0400
+@@ -106,6 +106,9 @@ void gcov_enable_events(void)
+ static int gcov_module_notifier(struct notifier_block *nb, unsigned long event,
+ 				void *data)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_gcov_module_notifier();
++#endif
+ 	struct module *mod = data;
+ 	struct gcov_info *info;
+ 	struct gcov_info *prev;
+diff -rup linux-3.2.11-pax/kernel/hrtimer.c linux-3.2.11-krum-pax/kernel/hrtimer.c
+--- linux-3.2.11-pax/kernel/hrtimer.c	2012-03-16 15:56:09.084408157 -0400
++++ linux-3.2.11-krum-pax/kernel/hrtimer.c	2012-03-16 15:18:39.614762184 -0400
+@@ -1386,6 +1386,9 @@ static void __hrtimer_peek_ahead_timers(
+  */
+ void hrtimer_peek_ahead_timers(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_hrtimer_peek_ahead_timers();
++#endif
+ 	unsigned long flags;
+ 
+ 	local_irq_save(flags);
+diff -rup linux-3.2.11-pax/kernel/jump_label.c linux-3.2.11-krum-pax/kernel/jump_label.c
+--- linux-3.2.11-pax/kernel/jump_label.c	2012-03-16 15:56:09.084408157 -0400
++++ linux-3.2.11-krum-pax/kernel/jump_label.c	2012-03-16 15:18:39.311424186 -0400
+@@ -301,6 +301,9 @@ static void jump_label_del_module(struct
+ 
+ static void jump_label_invalidate_module_init(struct module *mod)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_jump_label_invalidate_module_init();
++#endif
+ 	struct jump_entry *iter_start = mod->jump_entries;
+ 	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
+ 	struct jump_entry *iter;
+diff -rup linux-3.2.11-pax/kernel/kallsyms.c linux-3.2.11-krum-pax/kernel/kallsyms.c
+--- linux-3.2.11-pax/kernel/kallsyms.c	2012-03-16 15:56:09.087741574 -0400
++++ linux-3.2.11-krum-pax/kernel/kallsyms.c	2012-03-16 15:18:39.568094846 -0400
+@@ -567,6 +567,9 @@ static const struct seq_operations kalls
+ 
+ static int kallsyms_open(struct inode *inode, struct file *file)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kallsyms_open();
++#endif
+ 	/*
+ 	 * We keep iterator in m->private, since normal case is to
+ 	 * s_start from where we left off, so we avoid doing
+diff -rup linux-3.2.11-pax/kernel/kmod.c linux-3.2.11-krum-pax/kernel/kmod.c
+--- linux-3.2.11-pax/kernel/kmod.c	2012-03-16 15:56:09.087741574 -0400
++++ linux-3.2.11-krum-pax/kernel/kmod.c	2012-03-16 15:18:41.991465625 -0400
+@@ -200,6 +200,9 @@ EXPORT_SYMBOL(call_usermodehelper_freein
+ /* Keventd can't block, but this (a child) can. */
+ static int wait_for_helper(void *data)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_wait_for_helper();
++#endif
+ 	struct subprocess_info *sub_info = data;
+ 	pid_t pid;
+ 
+diff -rup linux-3.2.11-pax/kernel/kprobes.c linux-3.2.11-krum-pax/kernel/kprobes.c
+--- linux-3.2.11-pax/kernel/kprobes.c	2012-03-16 15:56:09.091074945 -0400
++++ linux-3.2.11-krum-pax/kernel/kprobes.c	2012-03-16 15:18:40.748113050 -0400
+@@ -214,6 +214,9 @@ kprobe_opcode_t __kprobes *get_insn_slot
+ /* Return 1 if all garbages are collected, otherwise 0. */
+ static int __kprobes collect_one_slot(struct kprobe_insn_page *kip, int idx)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_collect_one_slot();
++#endif
+ 	kip->slot_used[idx] = SLOT_CLEAN;
+ 	kip->nused--;
+ 	if (kip->nused == 0) {
+@@ -1953,6 +1956,9 @@ static struct notifier_block kprobe_modu
+ 
+ static int __init init_kprobes(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_init_kprobes();
++#endif
+ 	int i, err = 0;
+ 	unsigned long offset = 0, size = 0;
+ 	char *modname, namebuf[KSYM_NAME_LEN];
+@@ -2075,6 +2081,9 @@ static void __kprobes kprobe_seq_stop(st
+ 
+ static int __kprobes show_kprobe_addr(struct seq_file *pi, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_show_kprobe_addr();
++#endif
+ 	struct hlist_head *head;
+ 	struct hlist_node *node;
+ 	struct kprobe *p, *kp;
+diff -rup linux-3.2.11-pax/kernel/lockdep.c linux-3.2.11-krum-pax/kernel/lockdep.c
+--- linux-3.2.11-pax/kernel/lockdep.c	2012-03-16 15:56:09.091074945 -0400
++++ linux-3.2.11-krum-pax/kernel/lockdep.c	2012-03-16 15:18:38.274741505 -0400
+@@ -588,6 +588,9 @@ static int very_verbose(struct lock_clas
+  */
+ static int static_obj(void *obj)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_static_obj();
++#endif
+ 	unsigned long start = (unsigned long) &_stext,
+ 		      end   = (unsigned long) &_end,
+ 		      addr  = (unsigned long) obj;
+@@ -3012,6 +3015,9 @@ static int __lock_acquire(struct lockdep
+ 			  struct lockdep_map *nest_lock, unsigned long ip,
+ 			  int references)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___lock_acquire();
++#endif
+ 	struct task_struct *curr = current;
+ 	struct lock_class *class = NULL;
+ 	struct held_lock *hlock;
+diff -rup linux-3.2.11-pax/kernel/module.c linux-3.2.11-krum-pax/kernel/module.c
+--- linux-3.2.11-pax/kernel/module.c	2012-03-16 15:56:09.174409430 -0400
++++ linux-3.2.11-krum-pax/kernel/module.c	2012-03-16 15:18:41.141452463 -0400
+@@ -1671,6 +1671,9 @@ static void unset_module_init_ro_nx(stru
+ /* Iterate through all modules and set each module's text as RW */
+ void set_all_modules_text_rw(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_set_all_modules_text_rw();
++#endif
+ 	struct module *mod;
+ 
+ 	mutex_lock(&module_mutex);
+@@ -1692,6 +1695,9 @@ void set_all_modules_text_rw(void)
+ /* Iterate through all modules and set each module's text as RO */
+ void set_all_modules_text_ro(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_set_all_modules_text_ro();
++#endif
+ 	struct module *mod;
+ 
+ 	mutex_lock(&module_mutex);
+@@ -1727,6 +1733,9 @@ void __weak module_arch_cleanup(struct m
+ /* Free a module, remove from lists, etc. */
+ static void free_module(struct module *mod)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_free_module();
++#endif
+ 	trace_module_free(mod);
+ 
+ 	/* Delete from various lists */
+@@ -1824,6 +1833,9 @@ static int verify_export_symbols(struct
+ /* Change all symbols so that st_value encodes the pointer directly. */
+ static int simplify_symbols(struct module *mod, const struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_simplify_symbols();
++#endif
+ 	Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
+ 	Elf_Sym *sym = (void *)symsec->sh_addr;
+ 	unsigned long secbase;
+@@ -1960,6 +1972,9 @@ static long get_offset(struct module *mo
+    belongs in init. */
+ static void layout_sections(struct module *mod, struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_layout_sections();
++#endif
+ 	static unsigned long const masks[][2] = {
+ 		/* NOTE: all executable code must be the first section
+ 		 * in this array; otherwise modify the text_size
+@@ -2168,6 +2183,9 @@ static bool is_core_symbol(const Elf_Sym
+ 
+ static void layout_symtab(struct module *mod, struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_layout_symtab();
++#endif
+ 	Elf_Shdr *symsect = info->sechdrs + info->index.sym;
+ 	Elf_Shdr *strsect = info->sechdrs + info->index.str;
+ 	const Elf_Sym *src;
+@@ -2209,6 +2227,9 @@ static void layout_symtab(struct module
+ 
+ static void add_kallsyms(struct module *mod, const struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_add_kallsyms();
++#endif
+ 	unsigned int i, ndst;
+ 	const Elf_Sym *src;
+ 	Elf_Sym *dst;
+@@ -2481,6 +2502,9 @@ static struct module *setup_load_info(st
+ 
+ static int check_modinfo(struct module *mod, struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_check_modinfo();
++#endif
+ 	const char *modmagic = get_modinfo(info, "vermagic");
+ 	const char *license = get_modinfo(info, "license");
+ 	int err;
+@@ -2602,6 +2626,9 @@ static void find_module_sections(struct
+ 
+ static int move_module(struct module *mod, struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_move_module();
++#endif
+ 	int i;
+ 	void *ptr;
+ 
+@@ -2748,6 +2775,9 @@ static int check_module_license_and_vers
+ 
+ static void flush_module_icache(const struct module *mod)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_flush_module_icache();
++#endif
+ 	mm_segment_t old_fs;
+ 
+ 	/* flush the icache in correct context */
+@@ -2842,6 +2872,9 @@ out:
+ /* mod is no longer valid after this! */
+ static void module_deallocate(struct module *mod, struct load_info *info)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_module_deallocate();
++#endif
+ 	kfree(info->strmap);
+ 	percpu_modfree(mod);
+ 	module_free_exec(mod, mod->module_init_rx);
+@@ -3382,6 +3415,9 @@ static void m_stop(struct seq_file *m, v
+ 
+ static int m_show(struct seq_file *m, void *p)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_m_show();
++#endif
+ 	struct module *mod = list_entry(p, struct module, list);
+ 	char buf[8];
+ 
+diff -rup linux-3.2.11-pax/kernel/padata.c linux-3.2.11-krum-pax/kernel/padata.c
+--- linux-3.2.11-pax/kernel/padata.c	2012-03-16 15:56:09.194409883 -0400
++++ linux-3.2.11-krum-pax/kernel/padata.c	2012-03-16 15:18:41.624793278 -0400
+@@ -105,6 +105,9 @@ static void padata_parallel_worker(struc
+ int padata_do_parallel(struct padata_instance *pinst,
+ 		       struct padata_priv *padata, int cb_cpu)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_padata_do_parallel();
++#endif
+ 	int target_cpu, err;
+ 	struct padata_parallel_queue *queue;
+ 	struct parallel_data *pd;
+diff -rup linux-3.2.11-pax/kernel/panic.c linux-3.2.11-krum-pax/kernel/panic.c
+--- linux-3.2.11-pax/kernel/panic.c	2012-03-16 15:56:09.204409940 -0400
++++ linux-3.2.11-krum-pax/kernel/panic.c	2012-03-16 15:18:40.321439807 -0400
+@@ -59,6 +59,9 @@ EXPORT_SYMBOL(panic_blink);
+  */
+ NORET_TYPE void panic(const char * fmt, ...)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_panic();
++#endif
+ 	static char buf[1024];
+ 	va_list args;
+ 	long i, i_next = 0;
+diff -rup linux-3.2.11-pax/kernel/posix-timers.c linux-3.2.11-krum-pax/kernel/posix-timers.c
+--- linux-3.2.11-pax/kernel/posix-timers.c	2012-03-16 15:56:09.244410667 -0400
++++ linux-3.2.11-krum-pax/kernel/posix-timers.c	2012-03-16 15:18:40.821447538 -0400
+@@ -227,6 +227,9 @@ static int posix_get_boottime(const cloc
+  */
+ static __init int init_posix_timers(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_init_posix_timers();
++#endif
+ 	static struct k_clock clock_realtime = {
+ 		.clock_getres	= hrtimer_get_res,
+ 		.clock_get	= posix_clock_realtime_get,
+@@ -456,6 +459,9 @@ static struct pid *good_sigevent(sigeven
+ void posix_timers_register_clock(const clockid_t clock_id,
+ 				 struct k_clock *new_clock)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_posix_timers_register_clock();
++#endif
+ 	if ((unsigned) clock_id >= MAX_CLOCKS) {
+ 		printk(KERN_WARNING "POSIX clock register failed for clock_id %d\n",
+ 		       clock_id);
+diff -rup linux-3.2.11-pax/kernel/profile.c linux-3.2.11-krum-pax/kernel/profile.c
+--- linux-3.2.11-pax/kernel/profile.c	2012-03-16 15:56:09.247744025 -0400
++++ linux-3.2.11-krum-pax/kernel/profile.c	2012-03-16 15:18:40.548109977 -0400
+@@ -267,6 +267,9 @@ static void __profile_flip_buffers(void
+ 
+ static void profile_flip_buffers(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_profile_flip_buffers();
++#endif
+ 	int i, j, cpu;
+ 
+ 	mutex_lock(&profile_flip_mutex);
+@@ -305,6 +308,9 @@ static void profile_discard_flip_buffers
+ 
+ static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_profile_hits();
++#endif
+ 	unsigned long primary, secondary, flags, pc = (unsigned long)__pc;
+ 	int i, j, cpu;
+ 	struct profile_hit *hits;
+diff -rup linux-3.2.11-pax/kernel/rcutiny.c linux-3.2.11-krum-pax/kernel/rcutiny.c
+--- linux-3.2.11-pax/kernel/rcutiny.c	2012-03-16 15:56:09.251077395 -0400
++++ linux-3.2.11-krum-pax/kernel/rcutiny.c	2012-03-16 15:18:41.734795005 -0400
+@@ -146,6 +146,9 @@ void rcu_check_callbacks(int cpu, int us
+  */
+ static void __rcu_process_callbacks(struct rcu_ctrlblk *rcp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___rcu_process_callbacks();
++#endif
+ 	char *rn = NULL;
+ 	struct rcu_head *next, *list;
+ 	unsigned long flags;
+diff -rup linux-3.2.11-pax/kernel/rcutree.c linux-3.2.11-krum-pax/kernel/rcutree.c
+--- linux-3.2.11-pax/kernel/rcutree.c	2012-03-16 15:56:09.261077571 -0400
++++ linux-3.2.11-krum-pax/kernel/rcutree.c	2012-03-16 15:18:40.084769463 -0400
+@@ -355,6 +355,9 @@ static int rcu_implicit_offline_qs(struc
+  */
+ void rcu_enter_nohz(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_rcu_enter_nohz();
++#endif
+ 	unsigned long flags;
+ 	struct rcu_dynticks *rdtp;
+ 
+@@ -381,6 +384,9 @@ void rcu_enter_nohz(void)
+  */
+ void rcu_exit_nohz(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_rcu_exit_nohz();
++#endif
+ 	unsigned long flags;
+ 	struct rcu_dynticks *rdtp;
+ 
+@@ -408,6 +414,9 @@ void rcu_exit_nohz(void)
+  */
+ void rcu_nmi_enter(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_rcu_nmi_enter();
++#endif
+ 	struct rcu_dynticks *rdtp = &__get_cpu_var(rcu_dynticks);
+ 
+ 	if (rdtp->dynticks_nmi_nesting == 0 &&
+@@ -430,6 +439,9 @@ void rcu_nmi_enter(void)
+  */
+ void rcu_nmi_exit(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_rcu_nmi_exit();
++#endif
+ 	struct rcu_dynticks *rdtp = &__get_cpu_var(rcu_dynticks);
+ 
+ 	if (rdtp->dynticks_nmi_nesting == 0 ||
+@@ -486,6 +498,9 @@ static int dyntick_save_progress_counter
+  */
+ static int rcu_implicit_dynticks_qs(struct rcu_data *rdp)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_rcu_implicit_dynticks_qs();
++#endif
+ 	unsigned int curr;
+ 	unsigned int snap;
+ 
+diff -rup linux-3.2.11-pax/kernel/rtmutex-tester.c linux-3.2.11-krum-pax/kernel/rtmutex-tester.c
+--- linux-3.2.11-pax/kernel/rtmutex-tester.c	2012-03-16 15:56:09.271077709 -0400
++++ linux-3.2.11-krum-pax/kernel/rtmutex-tester.c	2012-03-16 15:18:41.494791307 -0400
+@@ -52,6 +52,9 @@ enum test_opcodes {
+ 
+ static int handle_op(struct test_thread_data *td, int lockwakeup)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_handle_op();
++#endif
+ 	int i, id, ret = -EINVAL;
+ 
+ 	switch(td->opcode) {
+@@ -136,6 +139,9 @@ static int handle_op(struct test_thread_
+  */
+ void schedule_rt_mutex_test(struct rt_mutex *mutex)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_schedule_rt_mutex_test();
++#endif
+ 	int tid, op, dat;
+ 	struct test_thread_data *td;
+ 
+diff -rup linux-3.2.11-pax/kernel/softirq.c linux-3.2.11-krum-pax/kernel/softirq.c
+--- linux-3.2.11-pax/kernel/softirq.c	2012-03-16 15:56:09.277744516 -0400
++++ linux-3.2.11-krum-pax/kernel/softirq.c	2012-03-16 15:18:39.321424326 -0400
+@@ -378,6 +378,9 @@ inline void raise_softirq_irqoff(unsigne
+ 
+ void raise_softirq(unsigned int nr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_raise_softirq();
++#endif
+ 	unsigned long flags;
+ 
+ 	local_irq_save(flags);
+@@ -445,6 +448,9 @@ EXPORT_SYMBOL(__tasklet_hi_schedule_firs
+ 
+ static void tasklet_action(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_tasklet_action();
++#endif
+ 	struct tasklet_struct *list;
+ 
+ 	local_irq_disable();
+diff -rup linux-3.2.11-pax/kernel/sysctl.c linux-3.2.11-krum-pax/kernel/sysctl.c
+--- linux-3.2.11-pax/kernel/sysctl.c	2012-03-16 15:56:09.294411403 -0400
++++ linux-3.2.11-krum-pax/kernel/sysctl.c	2012-03-16 15:18:42.124801018 -0400
+@@ -2252,6 +2252,9 @@ static int proc_get_long(char **buf, siz
+ static int proc_put_long(void __user **buf, size_t *size, unsigned long val,
+ 			  bool neg)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_proc_put_long();
++#endif
+ 	int len;
+ 	char tmp[TMPBUFLEN], *p = tmp;
+ 
+@@ -2526,6 +2529,9 @@ static int __do_proc_doulongvec_minmax(v
+ 				     unsigned long convmul,
+ 				     unsigned long convdiv)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___do_proc_doulongvec_minmax();
++#endif
+ 	unsigned long *i, *min, *max;
+ 	int vleft, first = 1, err = 0;
+ 	unsigned long page = 0;
+diff -rup linux-3.2.11-pax/kernel/time/alarmtimer.c linux-3.2.11-krum-pax/kernel/time/alarmtimer.c
+--- linux-3.2.11-pax/kernel/time/alarmtimer.c	2012-03-16 15:56:09.294411403 -0400
++++ linux-3.2.11-krum-pax/kernel/time/alarmtimer.c	2012-03-16 15:18:39.138088159 -0400
+@@ -770,6 +770,9 @@ static struct platform_driver alarmtimer
+  */
+ static int __init alarmtimer_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_alarmtimer_init();
++#endif
+ 	struct platform_device *pdev;
+ 	int error = 0;
+ 	int i;
+diff -rup linux-3.2.11-pax/kernel/time/tick-broadcast.c linux-3.2.11-krum-pax/kernel/time/tick-broadcast.c
+--- linux-3.2.11-pax/kernel/time/tick-broadcast.c	2012-03-16 15:56:09.294411403 -0400
++++ linux-3.2.11-krum-pax/kernel/time/tick-broadcast.c	2012-03-16 15:18:41.914797783 -0400
+@@ -92,6 +92,9 @@ int tick_is_broadcast_device(struct cloc
+  */
+ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_tick_device_uses_broadcast();
++#endif
+ 	unsigned long flags;
+ 	int ret = 0;
+ 
+diff -rup linux-3.2.11-pax/kernel/time/timer_stats.c linux-3.2.11-krum-pax/kernel/time/timer_stats.c
+--- linux-3.2.11-pax/kernel/time/timer_stats.c	2012-03-16 15:56:09.297744817 -0400
++++ linux-3.2.11-krum-pax/kernel/time/timer_stats.c	2012-03-16 15:18:40.811447373 -0400
+@@ -137,6 +137,9 @@ static struct entry *tstat_hash_table[TS
+ 
+ static void reset_entries(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_reset_entries();
++#endif
+ 	nr_entries = 0;
+ 	memset(entries, 0, sizeof(entries));
+ 	memset(tstat_hash_table, 0, sizeof(tstat_hash_table));
+@@ -235,6 +238,9 @@ void timer_stats_update_stats(void *time
+ 			      void *timerf, char *comm,
+ 			      unsigned int timer_flag)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_timer_stats_update_stats();
++#endif
+ 	/*
+ 	 * It doesn't matter which lock we take:
+ 	 */
+@@ -279,6 +285,9 @@ static void print_name_offset(struct seq
+ 
+ static int tstats_show(struct seq_file *m, void *v)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_tstats_show();
++#endif
+ 	struct timespec period;
+ 	struct entry *entry;
+ 	unsigned long ms;
+diff -rup linux-3.2.11-pax/lib/bitmap.c linux-3.2.11-krum-pax/lib/bitmap.c
+--- linux-3.2.11-pax/lib/bitmap.c	2012-03-16 15:56:09.357745787 -0400
++++ linux-3.2.11-krum-pax/lib/bitmap.c	2012-03-16 15:18:42.138134545 -0400
+@@ -417,6 +417,9 @@ int __bitmap_parse(const char *buf, unsi
+ 		int is_user, unsigned long *maskp,
+ 		int nmaskbits)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___bitmap_parse();
++#endif
+ 	int c, old_c, totaldigits, ndigits, nchunks, nbits;
+ 	u32 chunk;
+ 	const char __user *ubuf = (const char __force_user *)buf;
+@@ -594,6 +597,9 @@ static int __bitmap_parselist(const char
+ 		int is_user, unsigned long *maskp,
+ 		int nmaskbits)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___bitmap_parselist();
++#endif
+ 	unsigned a, b;
+ 	int c, old_c, totaldigits;
+ 	const char __user *ubuf = (const char __force_user *)buf;
+diff -rup linux-3.2.11-pax/lib/debugobjects.c linux-3.2.11-krum-pax/lib/debugobjects.c
+--- linux-3.2.11-pax/lib/debugobjects.c	2012-03-16 15:56:09.357745787 -0400
++++ linux-3.2.11-krum-pax/lib/debugobjects.c	2012-03-16 15:18:38.678081093 -0400
+@@ -278,6 +278,9 @@ debug_object_fixup(int (*fixup)(void *ad
+ 
+ static void debug_object_is_on_stack(void *addr, int onstack)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_debug_object_is_on_stack();
++#endif
+ 	int is_on_stack;
+ 	static int limit;
+ 
+diff -rup linux-3.2.11-pax/lib/devres.c linux-3.2.11-krum-pax/lib/devres.c
+--- linux-3.2.11-pax/lib/devres.c	2012-03-16 15:56:09.357745787 -0400
++++ linux-3.2.11-krum-pax/lib/devres.c	2012-03-16 15:18:40.568110256 -0400
+@@ -139,6 +139,9 @@ EXPORT_SYMBOL(devm_ioport_map);
+  */
+ void devm_ioport_unmap(struct device *dev, void __iomem *addr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_devm_ioport_unmap();
++#endif
+ 	ioport_unmap(addr);
+ 	WARN_ON(devres_destroy(dev, devm_ioport_map_release,
+ 			       devm_ioport_map_match, (void __force *)addr));
+diff -rup linux-3.2.11-pax/lib/inflate.c linux-3.2.11-krum-pax/lib/inflate.c
+--- linux-3.2.11-pax/lib/inflate.c	2012-03-16 15:56:09.364412461 -0400
++++ linux-3.2.11-krum-pax/lib/inflate.c	2012-03-16 15:18:40.734779533 -0400
+@@ -264,6 +264,9 @@ static void *malloc(int size)
+ 
+ static void free(void *where)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_free();
++#endif
+        malloc_count--;
+        if (!malloc_count)
+ 		malloc_ptr = free_mem_ptr;
+diff -rup linux-3.2.11-pax/lib/vsprintf.c linux-3.2.11-krum-pax/lib/vsprintf.c
+--- linux-3.2.11-pax/lib/vsprintf.c	2012-03-16 15:56:09.367745833 -0400
++++ linux-3.2.11-krum-pax/lib/vsprintf.c	2012-03-16 15:18:39.181422159 -0400
+@@ -1593,6 +1593,9 @@ EXPORT_SYMBOL_GPL(vbin_printf);
+  */
+ int bstr_printf(char *buf, size_t size, const char *fmt, const u32 *bin_buf)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_bstr_printf();
++#endif
+ 	struct printf_spec spec = {0};
+ 	char *str, *end;
+ 	const char *args = (const char *)bin_buf;
+Only in linux-3.2.11-krum-pax/: log
+diff -rup linux-3.2.11-pax/mm/filemap.c linux-3.2.11-krum-pax/mm/filemap.c
+--- linux-3.2.11-pax/mm/filemap.c	2012-03-16 15:56:09.381079441 -0400
++++ linux-3.2.11-krum-pax/mm/filemap.c	2012-03-16 15:18:40.411441183 -0400
+@@ -1767,6 +1767,9 @@ const struct vm_operations_struct generi
+ 
+ int generic_file_mmap(struct file * file, struct vm_area_struct * vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_generic_file_mmap();
++#endif
+ 	struct address_space *mapping = file->f_mapping;
+ 
+ 	if (!mapping->a_ops->readpage)
+diff -rup linux-3.2.11-pax/mm/highmem.c linux-3.2.11-krum-pax/mm/highmem.c
+--- linux-3.2.11-pax/mm/highmem.c	2012-03-16 15:56:09.384412800 -0400
++++ linux-3.2.11-krum-pax/mm/highmem.c	2012-03-16 15:18:40.791447089 -0400
+@@ -96,6 +96,9 @@ static DECLARE_WAIT_QUEUE_HEAD(pkmap_map
+ 
+ static void flush_all_zero_pkmaps(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_flush_all_zero_pkmaps();
++#endif
+ 	int i;
+ 	int need_flush = 0;
+ 
+diff -rup linux-3.2.11-pax/mm/hugetlb.c linux-3.2.11-krum-pax/mm/hugetlb.c
+--- linux-3.2.11-pax/mm/hugetlb.c	2012-03-16 15:56:09.391079552 -0400
++++ linux-3.2.11-krum-pax/mm/hugetlb.c	2012-03-16 15:18:39.298090632 -0400
+@@ -2304,6 +2304,9 @@ void unmap_hugepage_range(struct vm_area
+ static int unmap_ref_private(struct mm_struct *mm, struct vm_area_struct *vma,
+ 				struct page *page, unsigned long address)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_unmap_ref_private();
++#endif
+ 	struct hstate *h = hstate_vma(vma);
+ 	struct vm_area_struct *iter_vma;
+ 	struct address_space *mapping;
+@@ -2652,6 +2655,9 @@ backout_unlocked:
+ int hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 			unsigned long address, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_hugetlb_fault();
++#endif
+ 	pte_t *ptep;
+ 	pte_t entry;
+ 	int ret;
+diff -rup linux-3.2.11-pax/mm/memory.c linux-3.2.11-krum-pax/mm/memory.c
+--- linux-3.2.11-pax/mm/memory.c	2012-03-16 15:56:09.394412975 -0400
++++ linux-3.2.11-krum-pax/mm/memory.c	2012-03-16 15:18:41.381456184 -0400
+@@ -1980,6 +1980,9 @@ pte_t *__get_locked_pte(struct mm_struct
+ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+ 			struct page *page, pgprot_t prot)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_insert_page();
++#endif
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	int retval;
+ 	pte_t *pte;
+@@ -2141,6 +2144,9 @@ EXPORT_SYMBOL(vm_insert_pfn);
+ int vm_insert_mixed(struct vm_area_struct *vma, unsigned long addr,
+ 			unsigned long pfn)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_vm_insert_mixed();
++#endif
+ 	BUG_ON(!(vma->vm_flags & VM_MIXEDMAP));
+ 	BUG_ON(vma->vm_mirror);
+ 
+@@ -3056,6 +3062,9 @@ static int do_swap_page(struct mm_struct
+ 		unsigned long address, pte_t *page_table, pmd_t *pmd,
+ 		unsigned int flags, pte_t orig_pte)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_swap_page();
++#endif
+ 	spinlock_t *ptl;
+ 	struct page *page, *swapcache = NULL;
+ 	swp_entry_t entry;
+@@ -3249,6 +3258,9 @@ static int do_anonymous_page(struct mm_s
+ 		unsigned long address, pte_t *page_table, pmd_t *pmd,
+ 		unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_anonymous_page();
++#endif
+ 	struct page *page = NULL;
+ 	spinlock_t *ptl;
+ 	pte_t entry;
+@@ -3332,6 +3344,9 @@ static int __do_fault(struct mm_struct *
+ 		unsigned long address, pmd_t *pmd,
+ 		pgoff_t pgoff, unsigned int flags, pte_t orig_pte)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___do_fault();
++#endif
+ 	pte_t *page_table;
+ 	spinlock_t *ptl;
+ 	struct page *page;
+@@ -3587,6 +3602,9 @@ int handle_pte_fault(struct mm_struct *m
+ 		     struct vm_area_struct *vma, unsigned long address,
+ 		     pte_t *pte, pmd_t *pmd, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_handle_pte_fault();
++#endif
+ 	pte_t entry;
+ 	spinlock_t *ptl;
+ 
+@@ -3648,6 +3666,9 @@ unlock:
+ int handle_mm_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 		unsigned long address, unsigned int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_handle_mm_fault();
++#endif
+ 	pgd_t *pgd;
+ 	pud_t *pud;
+ 	pmd_t *pmd;
+@@ -3825,6 +3846,9 @@ static struct vm_area_struct gate_vma;
+ 
+ static int __init gate_vma_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_gate_vma_init();
++#endif
+ 	gate_vma.vm_mm = NULL;
+ 	gate_vma.vm_start = FIXADDR_USER_START;
+ 	gate_vma.vm_end = FIXADDR_USER_END;
+diff -rup linux-3.2.11-pax/mm/memory-failure.c linux-3.2.11-krum-pax/mm/memory-failure.c
+--- linux-3.2.11-pax/mm/memory-failure.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/memory-failure.c	2012-03-16 15:18:41.161452814 -0400
+@@ -193,6 +193,9 @@ EXPORT_SYMBOL_GPL(hwpoison_filter);
+ static int kill_proc_ao(struct task_struct *t, unsigned long addr, int trapno,
+ 			unsigned long pfn, struct page *page)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kill_proc_ao();
++#endif
+ 	struct siginfo si;
+ 	int ret;
+ 
+@@ -986,6 +989,9 @@ static void clear_page_hwpoison_huge_pag
+ 
+ int __memory_failure(unsigned long pfn, int trapno, int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___memory_failure();
++#endif
+ 	struct page_state *ps;
+ 	struct page *p;
+ 	struct page *hpage;
+@@ -1285,6 +1291,9 @@ core_initcall(memory_failure_init);
+  */
+ int unpoison_memory(unsigned long pfn)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_unpoison_memory();
++#endif
+ 	struct page *page;
+ 	struct page *p;
+ 	int freeit = 0;
+@@ -1407,6 +1416,9 @@ static int get_any_page(struct page *p,
+ 
+ static int soft_offline_huge_page(struct page *page, int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_soft_offline_huge_page();
++#endif
+ 	int ret;
+ 	unsigned long pfn = page_to_pfn(page);
+ 	struct page *hpage = compound_head(page);
+@@ -1473,6 +1485,9 @@ done:
+  */
+ int soft_offline_page(struct page *page, int flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_soft_offline_page();
++#endif
+ 	int ret;
+ 	unsigned long pfn = page_to_pfn(page);
+ 
+diff -rup linux-3.2.11-pax/mm/mempolicy.c linux-3.2.11-krum-pax/mm/mempolicy.c
+--- linux-3.2.11-pax/mm/mempolicy.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/mempolicy.c	2012-03-16 15:18:38.614746769 -0400
+@@ -632,6 +632,9 @@ static int policy_vma(struct vm_area_str
+ static int mbind_range(struct mm_struct *mm, unsigned long start,
+ 		       unsigned long end, struct mempolicy *new_pol)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_mbind_range();
++#endif
+ 	struct vm_area_struct *next;
+ 	struct vm_area_struct *prev;
+ 	struct vm_area_struct *vma;
+diff -rup linux-3.2.11-pax/mm/mlock.c linux-3.2.11-krum-pax/mm/mlock.c
+--- linux-3.2.11-pax/mm/mlock.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/mlock.c	2012-03-16 15:18:41.938131478 -0400
+@@ -374,6 +374,9 @@ out:
+ 
+ static int do_mlock(unsigned long start, size_t len, int on)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_mlock();
++#endif
+ 	unsigned long nstart, end, tmp;
+ 	struct vm_area_struct * vma, * prev;
+ 	int error;
+diff -rup linux-3.2.11-pax/mm/mmap.c linux-3.2.11-krum-pax/mm/mmap.c
+--- linux-3.2.11-pax/mm/mmap.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/mmap.c	2012-03-16 15:18:40.141437035 -0400
+@@ -1025,6 +1025,9 @@ unsigned long do_mmap_pgoff(struct file
+ 	int error;
+ 	unsigned long reqprot = prot;
+ 
++	//sasho
++	security_krum_hook();
++
+ 	/*
+ 	 * Does the application expect PROT_READ to imply PROT_EXEC?
+ 	 *
+@@ -1727,6 +1730,9 @@ bottomup:
+ 
+ void arch_unmap_area_topdown(struct mm_struct *mm, unsigned long addr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_arch_unmap_area_topdown();
++#endif
+ 
+ #ifdef CONFIG_PAX_SEGMEXEC
+ 	if ((mm->pax_flags & MF_PAX_SEGMEXEC) && SEGMEXEC_TASK_SIZE <= addr)
+@@ -1920,6 +1926,9 @@ static int acct_stack_growth(struct vm_a
+  */
+ int expand_upwards(struct vm_area_struct *vma, unsigned long address)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_expand_upwards();
++#endif
+ 	int error;
+ 	bool locknext;
+ 
+@@ -1985,6 +1994,9 @@ int expand_upwards(struct vm_area_struct
+ int expand_downwards(struct vm_area_struct *vma,
+ 				   unsigned long address)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_expand_downwards();
++#endif
+ 	int error;
+ 	bool lockprev = false;
+ 	struct vm_area_struct *prev;
+@@ -2119,6 +2131,9 @@ find_extend_vma(struct mm_struct * mm, u
+  */
+ static void remove_vma_list(struct mm_struct *mm, struct vm_area_struct *vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_remove_vma_list();
++#endif
+ 	/* Update high watermark before we lower total_vm */
+ 	update_hiwater_vm(mm);
+ 	do {
+@@ -2210,6 +2225,9 @@ detach_vmas_to_be_unmapped(struct mm_str
+ static int __split_vma(struct mm_struct * mm, struct vm_area_struct * vma,
+ 	      unsigned long addr, int new_below)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___split_vma();
++#endif
+ 	struct mempolicy *pol;
+ 	struct vm_area_struct *new;
+ 	int err = -ENOMEM;
+@@ -2401,6 +2419,9 @@ int __do_munmap(struct mm_struct *mm, un
+ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
+ #endif
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_do_munmap();
++#endif
+ 	unsigned long end;
+ 	struct vm_area_struct *vma, *prev, *last;
+ 
+@@ -2632,6 +2653,9 @@ EXPORT_SYMBOL(do_brk);
+ /* Release all mmaps. */
+ void exit_mmap(struct mm_struct *mm)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_exit_mmap();
++#endif
+ 	struct mmu_gather tlb;
+ 	struct vm_area_struct *vma;
+ 	unsigned long nr_accounted = 0;
+@@ -2684,6 +2708,9 @@ void exit_mmap(struct mm_struct *mm)
+  */
+ int insert_vm_struct(struct mm_struct * mm, struct vm_area_struct * vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_insert_vm_struct();
++#endif
+ 	struct vm_area_struct * __vma, * prev;
+ 	struct rb_node ** rb_link, * rb_parent;
+ 
+@@ -2900,6 +2927,9 @@ int install_special_mapping(struct mm_st
+ 			    unsigned long addr, unsigned long len,
+ 			    unsigned long vm_flags, struct page **pages)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_install_special_mapping();
++#endif
+ 	int ret;
+ 	struct vm_area_struct *vma;
+ 
+Only in linux-3.2.11-krum-pax/mm: mmap.c~
+diff -rup linux-3.2.11-pax/mm/mprotect.c linux-3.2.11-krum-pax/mm/mprotect.c
+--- linux-3.2.11-pax/mm/mprotect.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/mprotect.c	2012-03-16 15:18:38.918084805 -0400
+@@ -129,6 +129,9 @@ static void change_protection(struct vm_
+ 		unsigned long addr, unsigned long end, pgprot_t newprot,
+ 		int dirty_accountable)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_change_protection();
++#endif
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	pgd_t *pgd;
+ 	unsigned long next;
+diff -rup linux-3.2.11-pax/mm/mremap.c linux-3.2.11-krum-pax/mm/mremap.c
+--- linux-3.2.11-pax/mm/mremap.c	2012-03-16 15:56:09.401079734 -0400
++++ linux-3.2.11-krum-pax/mm/mremap.c	2012-03-16 15:18:40.541443188 -0400
+@@ -73,6 +73,9 @@ static void move_ptes(struct vm_area_str
+ 		struct vm_area_struct *new_vma, pmd_t *new_pmd,
+ 		unsigned long new_addr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_move_ptes();
++#endif
+ 	struct address_space *mapping = NULL;
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	pte_t *old_pte, *new_pte, pte;
+diff -rup linux-3.2.11-pax/mm/nommu.c linux-3.2.11-krum-pax/mm/nommu.c
+--- linux-3.2.11-pax/mm/nommu.c	2012-03-16 15:56:09.404413140 -0400
++++ linux-3.2.11-krum-pax/mm/nommu.c	2012-03-16 15:18:39.634762541 -0400
+@@ -1519,6 +1519,9 @@ SYSCALL_DEFINE1(old_mmap, struct mmap_ar
+ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	      unsigned long addr, int new_below)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_split_vma();
++#endif
+ 	struct vm_area_struct *new;
+ 	struct vm_region *region;
+ 	unsigned long npages;
+diff -rup linux-3.2.11-pax/mm/page_alloc.c linux-3.2.11-krum-pax/mm/page_alloc.c
+--- linux-3.2.11-pax/mm/page_alloc.c	2012-03-16 15:56:09.404413140 -0400
++++ linux-3.2.11-krum-pax/mm/page_alloc.c	2012-03-16 15:18:39.438092801 -0400
+@@ -780,6 +780,9 @@ static inline int check_new_page(struct
+ 
+ static int prep_new_page(struct page *page, int order, gfp_t gfp_flags)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_prep_new_page();
++#endif
+ 	int i;
+ 
+ 	for (i = 0; i < (1 << order); i++) {
+diff -rup linux-3.2.11-pax/mm/rmap.c linux-3.2.11-krum-pax/mm/rmap.c
+--- linux-3.2.11-pax/mm/rmap.c	2012-03-16 15:56:09.407746484 -0400
++++ linux-3.2.11-krum-pax/mm/rmap.c	2012-03-16 15:18:39.598095298 -0400
+@@ -149,6 +149,9 @@ static void anon_vma_chain_free(struct a
+  */
+ int anon_vma_prepare(struct vm_area_struct *vma)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_anon_vma_prepare();
++#endif
+ 	struct anon_vma *anon_vma = vma->anon_vma;
+ 	struct anon_vma_chain *avc;
+ 
+diff -rup linux-3.2.11-pax/mm/shmem.c linux-3.2.11-krum-pax/mm/shmem.c
+--- linux-3.2.11-pax/mm/shmem.c	2012-03-16 15:56:09.407746484 -0400
++++ linux-3.2.11-krum-pax/mm/shmem.c	2012-03-16 15:18:40.178104287 -0400
+@@ -2174,6 +2174,9 @@ static void shmem_put_super(struct super
+ 
+ int shmem_fill_super(struct super_block *sb, void *data, int silent)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_shmem_fill_super();
++#endif
+ 	struct inode *inode;
+ 	struct dentry *root;
+ 	struct shmem_sb_info *sbinfo;
+diff -rup linux-3.2.11-pax/mm/slab.c linux-3.2.11-krum-pax/mm/slab.c
+--- linux-3.2.11-pax/mm/slab.c	2012-03-16 15:56:09.414413256 -0400
++++ linux-3.2.11-krum-pax/mm/slab.c	2012-03-16 15:18:40.958116299 -0400
+@@ -1481,6 +1481,9 @@ static void __init set_up_list3s(struct
+  */
+ void __init kmem_cache_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kmem_cache_init();
++#endif
+ 	size_t left_over;
+ 	struct cache_sizes *sizes;
+ 	struct cache_names *names;
+@@ -4240,6 +4243,9 @@ static void s_stop(struct seq_file *m, v
+ 
+ static int s_show(struct seq_file *m, void *p)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_s_show();
++#endif
+ 	struct kmem_cache *cachep = list_entry(p, struct kmem_cache, next);
+ 	struct slab *slabp;
+ 	unsigned long active_objs;
+diff -rup linux-3.2.11-pax/mm/slob.c linux-3.2.11-krum-pax/mm/slob.c
+--- linux-3.2.11-pax/mm/slob.c	2012-03-16 15:56:09.414413256 -0400
++++ linux-3.2.11-krum-pax/mm/slob.c	2012-03-16 15:18:38.868084019 -0400
+@@ -536,6 +536,9 @@ EXPORT_SYMBOL(__kmalloc_node);
+ 
+ void kfree(const void *block)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kfree();
++#endif
+ 	struct slob_page *sp;
+ 
+ 	trace_kfree(_RET_IP_, block);
+diff -rup linux-3.2.11-pax/mm/slub.c linux-3.2.11-krum-pax/mm/slub.c
+--- linux-3.2.11-pax/mm/slub.c	2012-03-16 15:56:09.414413252 -0400
++++ linux-3.2.11-krum-pax/mm/slub.c	2012-03-16 15:18:41.231453875 -0400
+@@ -2555,6 +2555,9 @@ redo:
+ 
+ void kmem_cache_free(struct kmem_cache *s, void *x)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kmem_cache_free();
++#endif
+ 	struct page *page;
+ 
+ 	page = virt_to_head_page(x);
+@@ -2980,6 +2983,9 @@ static int kmem_cache_open(struct kmem_c
+ 		size_t align, unsigned long flags,
+ 		void (*ctor)(void *))
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kmem_cache_open();
++#endif
+ 	memset(s, 0, kmem_size);
+ 	s->name = name;
+ 	s->ctor = ctor;
+@@ -3674,6 +3680,9 @@ static int slab_memory_callback(struct n
+ 
+ static void __init kmem_cache_bootstrap_fixup(struct kmem_cache *s)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kmem_cache_bootstrap_fixup();
++#endif
+ 	int node;
+ 
+ 	list_add(&s->list, &slab_caches);
+@@ -3697,6 +3706,9 @@ static void __init kmem_cache_bootstrap_
+ 
+ void __init kmem_cache_init(void)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_kmem_cache_init();
++#endif
+ 	int i;
+ 	int caches = 0;
+ 	struct kmem_cache *temp_kmem_cache;
+@@ -3863,6 +3875,9 @@ void __init kmem_cache_init_late(void)
+  */
+ static int slab_unmergeable(struct kmem_cache *s)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_slab_unmergeable();
++#endif
+ 	if (slub_nomerge || (s->flags & SLUB_NEVER_MERGE))
+ 		return 1;
+ 
+diff -rup linux-3.2.11-pax/mm/swap.c linux-3.2.11-krum-pax/mm/swap.c
+--- linux-3.2.11-pax/mm/swap.c	2012-03-16 15:56:09.414413252 -0400
++++ linux-3.2.11-krum-pax/mm/swap.c	2012-03-16 15:18:38.774749251 -0400
+@@ -68,6 +68,9 @@ static void __put_single_page(struct pag
+ 
+ static void __put_compound_page(struct page *page)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum___put_compound_page();
++#endif
+ 	compound_page_dtor *dtor;
+ 
+ 	__page_cache_release(page);
+diff -rup linux-3.2.11-pax/mm/swapfile.c linux-3.2.11-krum-pax/mm/swapfile.c
+--- linux-3.2.11-pax/mm/swapfile.c	2012-03-16 15:56:09.414413252 -0400
++++ linux-3.2.11-krum-pax/mm/swapfile.c	2012-03-16 15:18:39.104754362 -0400
+@@ -1777,6 +1777,9 @@ static const struct seq_operations swaps
+ 
+ static int swaps_open(struct inode *inode, struct file *file)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_swaps_open();
++#endif
+ 	struct seq_file *seq;
+ 	int ret;
+ 
+diff -rup linux-3.2.11-pax/mm/vmalloc.c linux-3.2.11-krum-pax/mm/vmalloc.c
+--- linux-3.2.11-pax/mm/vmalloc.c	2012-03-16 15:56:09.417746675 -0400
++++ linux-3.2.11-krum-pax/mm/vmalloc.c	2012-03-16 15:18:41.771462252 -0400
+@@ -35,6 +35,9 @@
+ 
+ static void vunmap_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_vunmap_pte_range();
++#endif
+ 	pte_t *pte;
+ 
+ 	pte = pte_offset_kernel(pmd, addr);
+@@ -101,6 +104,9 @@ static void vunmap_page_range(unsigned l
+ static int vmap_pte_range(pmd_t *pmd, unsigned long addr,
+ 		unsigned long end, pgprot_t prot, struct page **pages, int *nr)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_vmap_pte_range();
++#endif
+ 	pte_t *pte;
+ 	int ret = -ENOMEM;
+ 
+@@ -211,6 +217,9 @@ static int vmap_page_range(unsigned long
+ 
+ int is_vmalloc_or_module_addr(const void *x)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_is_vmalloc_or_module_addr();
++#endif
+ 	/*
+ 	 * ARM, x86-64 and sparc64 put modules in a special place,
+ 	 * and fall back on vmalloc() if that fails. Others
+@@ -2164,6 +2173,9 @@ finished:
+ int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
+ 						unsigned long pgoff)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_remap_vmalloc_range();
++#endif
+ 	struct vm_struct *area;
+ 	unsigned long uaddr = vma->vm_start;
+ 	unsigned long usize = vma->vm_end - vma->vm_start;
+diff -rup linux-3.2.11-pax/mm/vmstat.c linux-3.2.11-krum-pax/mm/vmstat.c
+--- linux-3.2.11-pax/mm/vmstat.c	2012-03-16 15:56:09.417746675 -0400
++++ linux-3.2.11-krum-pax/mm/vmstat.c	2012-03-16 15:18:40.974783219 -0400
+@@ -436,6 +436,9 @@ EXPORT_SYMBOL(dec_zone_page_state);
+  */
+ void refresh_cpu_vm_stats(int cpu)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_refresh_cpu_vm_stats();
++#endif
+ 	struct zone *zone;
+ 	int i;
+ 	int global_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
+Only in linux-3.2.11-krum-pax/: prep.sh
+Only in linux-3.2.11-krum-pax/: prep.sh~
+Only in linux-3.2.11-krum-pax/scripts/genksyms: keywords.hash.c
+Only in linux-3.2.11-krum-pax/scripts/genksyms: lex.lex.c
+Only in linux-3.2.11-krum-pax/scripts/genksyms: parse.tab.c
+Only in linux-3.2.11-krum-pax/scripts/genksyms: parse.tab.h
+diff -rup linux-3.2.11-pax/security/capability.c linux-3.2.11-krum-pax/security/capability.c
+--- linux-3.2.11-pax/security/capability.c	2012-03-13 13:05:09.000000000 -0400
++++ linux-3.2.11-krum-pax/security/capability.c	2012-03-16 15:18:42.238136105 -0400
+@@ -12,6 +12,12 @@
+ 
+ #include <linux/security.h>
+ 
++//sasho
++static void cap_krum_hook(void)
++{
++  return ;
++}
++
+ static int cap_syslog(int type)
+ {
+ 	return 0;
+@@ -863,6 +869,1131 @@ static void cap_audit_rule_free(void *ls
+ }
+ #endif /* CONFIG_AUDIT */
+ 
++static void cap_krum_audit_receive_msg(void) 
++{
++
++}
++
++static void cap_krum_swaps_open(void) 
++{
++
++}
++
++static void cap_krum_configfs_readdir(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_osb_dump(void) 
++{
++
++}
++
++static void cap_krum___memory_failure(void) 
++{
++
++}
++
++static void cap_krum_cachefiles_daemon_bstop(void) 
++{
++
++}
++
++static void cap_krum_exit_mmap(void) 
++{
++
++}
++
++static void cap_krum_cachefiles_write_page(void) 
++{
++
++}
++
++static void cap_krum_arch_unmap_area_topdown(void) 
++{
++
++}
++
++static void cap_krum___fscache_read_or_alloc_pages(void) 
++{
++
++}
++
++static void cap_krum_link_pipe(void) 
++{
++
++}
++
++static void cap_krum_locks_remove_flock(void) 
++{
++
++}
++
++static void cap_krum_ecryptfs_readlink_lower(void) 
++{
++
++}
++
++static void cap_krum_install_special_mapping(void) 
++{
++
++}
++
++static void cap_krum_bstr_printf(void) 
++{
++
++}
++
++static void cap_krum_befs_put_link(void) 
++{
++
++}
++
++static void cap_krum_m_show(void) 
++{
++
++}
++
++static void cap_krum_rcu_nmi_exit(void) 
++{
++
++}
++
++static void cap_krum_prep_new_page(void) 
++{
++
++}
++
++static void cap_krum_timer_stats_update_stats(void) 
++{
++
++}
++
++static void cap_krum_cachefiles_histogram_show(void) 
++{
++
++}
++
++static void cap_krum_nfs_zap_caches_locked(void) 
++{
++
++}
++
++static void cap_krum_flush_module_icache(void) 
++{
++
++}
++
++static void cap_krum_fill_read_buffer(void) 
++{
++
++}
++
++static void cap_krum_task_mem(void) 
++{
++
++}
++
++static void cap_krum_mbind_range(void) 
++{
++
++}
++
++static void cap_krum_shift_arg_pages(void) 
++{
++
++}
++
++static void cap_krum_hrtimer_peek_ahead_timers(void) 
++{
++
++}
++
++static void cap_krum___fscache_write_page(void) 
++{
++
++}
++
++static void cap_krum_insert_page(void) 
++{
++
++}
++
++static void cap_krum_kill_proc_ao(void) 
++{
++
++}
++
++static void cap_krum___lock_acquire(void) 
++{
++
++}
++
++static void cap_krum_vunmap_pte_range(void) 
++{
++
++}
++
++static void cap_krum_kmem_cache_free(void) 
++{
++
++}
++
++static void cap_krum_simplify_symbols(void) 
++{
++
++}
++
++static void cap_krum_fscache_wait_for_deferred_lookup(void) 
++{
++
++}
++
++static void cap_krum_autofs4_write(void) 
++{
++
++}
++
++static void cap_krum_cachefiles_daemon_fstop(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_reserve_suballoc_bits(void) 
++{
++
++}
++
++static void cap_krum_perf_proc_update_handler(void) 
++{
++
++}
++
++static void cap_krum_copy_fs(void) 
++{
++
++}
++
++static void cap_krum_layout_symtab(void) 
++{
++
++}
++
++static void cap_krum_coda_cache_enter(void) 
++{
++
++}
++
++static void cap_krum_fscache_submit_exclusive_op(void) 
++{
++
++}
++
++static void cap_krum_sysfs_get_open_dirent(void) 
++{
++
++}
++
++static void cap_krum_fscache_alloc_object(void) 
++{
++
++}
++
++static void cap_krum_schedule_rt_mutex_test(void) 
++{
++
++}
++
++static void cap_krum_tasklet_action(void) 
++{
++
++}
++
++static void cap_krum_padata_do_parallel(void) 
++{
++
++}
++
++static void cap_krum_ecryptfs_write_lower(void) 
++{
++
++}
++
++static void cap_krum_fscache_enqueue_operation(void) 
++{
++
++}
++
++static void cap_krum_kfree(void) 
++{
++
++}
++
++static void cap_krum_fscache_object_available(void) 
++{
++
++}
++
++static void cap_krum_unshare_fs(void) 
++{
++
++}
++
++static void cap_krum_insert_vm_struct(void) 
++{
++
++}
++
++static void cap_krum_flush_all_zero_pkmaps(void) 
++{
++
++}
++
++static void cap_krum_init_jfs_fs(void) 
++{
++
++}
++
++static void cap_krum_load_flat_file(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_claim_metadata(void) 
++{
++
++}
++
++static void cap_krum_anon_vma_prepare(void) 
++{
++
++}
++
++static void cap_krum_kmem_cache_bootstrap_fixup(void) 
++{
++
++}
++
++static void cap_krum_show_kprobe_addr(void) 
++{
++
++}
++
++static void cap_krum_traverse(void) 
++{
++
++}
++
++static void cap_krum_debug_object_is_on_stack(void) 
++{
++
++}
++
++static void cap_krum_profile_flip_buffers(void) 
++{
++
++}
++
++static void cap_krum_opipe_prep(void) 
++{
++
++}
++
++static void cap_krum_unmap_ref_private(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_initialize_super(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_claim_new_inode_at_loc(void) 
++{
++
++}
++
++static void cap_krum_fscache_object_lookup_negative(void) 
++{
++
++}
++
++static void cap_krum_is_vmalloc_or_module_addr(void) 
++{
++
++}
++
++static void cap_krum___fscache_update_cookie(void) 
++{
++
++}
++
++static void cap_krum_s_show(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_claim_new_inode(void) 
++{
++
++}
++
++static void cap_krum_fill_auxv_note(void) 
++{
++
++}
++
++static void cap_krum_audit_log_lost(void) 
++{
++
++}
++
++static void cap_krum_nfs_size_need_update(void) 
++{
++
++}
++
++static void cap_krum_coda_cache_check(void) 
++{
++
++}
++
++static void cap_krum_copy_strings_kernel(void) 
++{
++
++}
++
++static void cap_krum_perf_event_mmap_event(void) 
++{
++
++}
++
++static void cap_krum_fscache_lookup_object(void) 
++{
++
++}
++
++static void cap_krum_tstats_show(void) 
++{
++
++}
++
++static void cap_krum___update_reloc_root(void) 
++{
++
++}
++
++static void cap_krum_meminfo_proc_show(void) 
++{
++
++}
++
++static void cap_krum_dcache_readdir(void) 
++{
++
++}
++
++static void cap_krum___fscache_read_or_alloc_page(void) 
++{
++
++}
++
++static void cap_krum_vm_insert_mixed(void) 
++{
++
++}
++
++static void cap_krum_smack_inode_getsecctx(void) 
++{
++
++}
++
++static void cap_krum_kallsyms_open(void) 
++{
++
++}
++
++static void cap_krum_vfs_caches_init(void) 
++{
++
++}
++
++static void cap_krum_rcu_exit_nohz(void) 
++{
++
++}
++
++static void cap_krum_expand_upwards(void) 
++{
++
++}
++
++static void cap_krum_sysfs_notify_dirent(void) 
++{
++
++}
++
++static void cap_krum___bprm_mm_init(void) 
++{
++
++}
++
++static void cap_krum_kmem_cache_init(void) 
++{
++
++}
++
++static void cap_krum_free(void) 
++{
++
++}
++
++static void cap_krum_proc_pid_status(void) 
++{
++
++}
++
++static void cap_krum_handle_op(void) 
++{
++
++}
++
++static void cap_krum_remap_vmalloc_range(void) 
++{
++
++}
++
++static void cap_krum___rcu_process_callbacks(void) 
++{
++
++}
++
++static void cap_krum_ext4_mb_collect_stats(void) 
++{
++
++}
++
++static void cap_krum_fscache_stats_show(void) 
++{
++
++}
++
++static void cap_krum_show_numa_map(void) 
++{
++
++}
++
++static void cap_krum_soft_offline_huge_page(void) 
++{
++
++}
++
++static void cap_krum_fscache_object_state_machine(void) 
++{
++
++}
++
++static void cap_krum_fscache_put_operation(void) 
++{
++
++}
++
++static void cap_krum_add_kallsyms(void) 
++{
++
++}
++
++static void cap_krum_fscache_end_page_write(void) 
++{
++
++}
++
++static void cap_krum_remove_vma_list(void) 
++{
++
++}
++
++static void cap_krum_gate_vma_init(void) 
++{
++
++}
++
++static void cap_krum_module_deallocate(void) 
++{
++
++}
++
++static void cap_krum_do_mlock(void) 
++{
++
++}
++
++static void cap_krum_kernel_read(void) 
++{
++
++}
++
++static void cap_krum_cuse_init(void) 
++{
++
++}
++
++static void cap_krum_static_obj(void) 
++{
++
++}
++
++static void cap_krum_task_cpus_allowed(void) 
++{
++
++}
++
++static void cap_krum_wait_for_helper(void) 
++{
++
++}
++
++static void cap_krum_aio_setup_ring(void) 
++{
++
++}
++
++static void cap_krum_cifs_stats_proc_show(void) 
++{
++
++}
++
++static void cap_krum_set_all_modules_text_rw(void) 
++{
++
++}
++
++static void cap_krum_soft_offline_page(void) 
++{
++
++}
++
++static void cap_krum_ceph_readdir(void) 
++{
++
++}
++
++static void cap_krum_fscache_write_op(void) 
++{
++
++}
++
++static void cap_krum_cachefiles_daemon_bind(void) 
++{
++
++}
++
++static void cap_krum_set_brk(void) 
++{
++
++}
++
++static void cap_krum_init_kprobes(void) 
++{
++
++}
++
++static void cap_krum_ipipe_prep(void) 
++{
++
++}
++
++static void cap_krum_fscache_wait_for_retrieval_activation(void) 
++{
++
++}
++
++static void cap_krum___fscache_uncache_page(void) 
++{
++
++}
++
++static void cap_krum_refresh_cpu_vm_stats(void) 
++{
++
++}
++
++static void cap_krum_ima_add_digest_entry(void) 
++{
++
++}
++
++static void cap_krum_show_super(void) 
++{
++
++}
++
++static void cap_krum___do_proc_doulongvec_minmax(void) 
++{
++
++}
++
++static void cap_krum_futex_init(void) 
++{
++
++}
++
++static void cap_krum_ext4_mb_release(void) 
++{
++
++}
++
++static void cap_krum_gcov_module_notifier(void) 
++{
++
++}
++
++static void cap_krum___put_compound_page(void) 
++{
++
++}
++
++static void cap_krum_set_all_modules_text_ro(void) 
++{
++
++}
++
++static void cap_krum___fscache_attr_changed(void) 
++{
++
++}
++
++static void cap_krum_unpoison_memory(void) 
++{
++
++}
++
++static void cap_krum_move_ptes(void) 
++{
++
++}
++
++static void cap_krum___ocfs2_claim_clusters(void) 
++{
++
++}
++
++static void cap_krum_split_vma(void) 
++{
++
++}
++
++static void cap_krum_coda_cache_clear_inode(void) 
++{
++
++}
++
++static void cap_krum_move_module(void) 
++{
++
++}
++
++static void cap_krum_sync_child_event(void) 
++{
++
++}
++
++static void cap_krum___fscache_relinquish_cookie(void) 
++{
++
++}
++
++static void cap_krum_fscache_obtained_object(void) 
++{
++
++}
++
++static void cap_krum_tick_device_uses_broadcast(void) 
++{
++
++}
++
++static void cap_krum_perf_output_read_one(void) 
++{
++
++}
++
++static void cap_krum_check_unsafe_exec(void) 
++{
++
++}
++
++static void cap_krum_fscache_operation_gc(void) 
++{
++
++}
++
++static void cap_krum_posix_timers_register_clock(void) 
++{
++
++}
++
++static void cap_krum_dup_mmap(void) 
++{
++
++}
++
++static void cap_krum_fscache_acquire_non_index_cookie(void) 
++{
++
++}
++
++static void cap_krum_ecryptfs_read_lower(void) 
++{
++
++}
++
++static void cap_krum_reset_entries(void) 
++{
++
++}
++
++static void cap_krum_bio_copy_kern_endio(void) 
++{
++
++}
++
++static void cap_krum_exit_fs(void) 
++{
++
++}
++
++static void cap_krum_load_elf_binary(void) 
++{
++
++}
++
++static void cap_krum_setup_arg_pages(void) 
++{
++
++}
++
++static void cap_krum_show_map_vma(void) 
++{
++
++}
++
++static void cap_krum_collect_one_slot(void) 
++{
++
++}
++
++static void cap_krum_count(void) 
++{
++
++}
++
++static void cap_krum___fscache_alloc_page(void) 
++{
++
++}
++
++static void cap_krum_layout_sections(void) 
++{
++
++}
++
++static void cap_krum_fscache_attr_changed_op(void) 
++{
++
++}
++
++static void cap_krum_compat_ioctl_preallocate(void) 
++{
++
++}
++
++static void cap_krum_serial_struct_ioctl(void) 
++{
++
++}
++
++static void cap_krum_free_module(void) 
++{
++
++}
++
++static void cap_krum___bitmap_parse(void) 
++{
++
++}
++
++static void cap_krum_devm_ioport_unmap(void) 
++{
++
++}
++
++static void cap_krum_ocfs2_local_alloc_slide_window(void) 
++{
++
++}
++
++static void cap_krum_rcu_nmi_enter(void) 
++{
++
++}
++
++static void cap_krum_rcu_implicit_dynticks_qs(void) 
++{
++
++}
++
++static void cap_krum_ima_add_violation(void) 
++{
++
++}
++
++static void cap_krum_daemonize_fs_struct(void) 
++{
++
++}
++
++static void cap_krum_check_modinfo(void) 
++{
++
++}
++
++static void cap_krum_hugetlb_fault(void) 
++{
++
++}
++
++static void cap_krum___do_fault(void) 
++{
++
++}
++
++static void cap_krum_kmem_cache_open(void) 
++{
++
++}
++
++static void cap_krum_raise_softirq(void) 
++{
++
++}
++
++static void cap_krum_alarmtimer_init(void) 
++{
++
++}
++
++static void cap_krum_proc_put_long(void) 
++{
++
++}
++
++static void cap_krum_shmem_fill_super(void) 
++{
++
++}
++
++static void cap_krum_vfs_readlink(void) 
++{
++
++}
++
++static void cap_krum_do_profile_hits(void) 
++{
++
++}
++
++static void cap_krum_sysfs_poll(void) 
++{
++
++}
++
++static void cap_krum_rcu_enter_nohz(void) 
++{
++
++}
++
++static void cap_krum_expand_corename(void) 
++{
++
++}
++
++static void cap_krum_get_next_ino(void) 
++{
++
++}
++
++static void cap_krum_vmap_pte_range(void) 
++{
++
++}
++
++static void cap_krum_nommu_vma_show(void) 
++{
++
++}
++
++static void cap_krum_init_posix_timers(void) 
++{
++
++}
++
++static void cap_krum_generic_file_mmap(void) 
++{
++
++}
++
++static void cap_krum_register_security(void) 
++{
++
++}
++
++static void cap_krum_load_aout_binary(void) 
++{
++
++}
++
++static void cap_krum_format_corename(void) 
++{
++
++}
++
++static void cap_krum_panic(void) 
++{
++
++}
++
++static void cap_krum_ext4_mb_simple_scan_group(void) 
++{
++
++}
++
++static void cap_krum_jffs2_mark_erased_block(void) 
++{
++
++}
++
++static void cap_krum_slab_unmergeable(void) 
++{
++
++}
++
++static void cap_krum_do_swap_page(void) 
++{
++
++}
++
++static void cap_krum_fscache_submit_op(void) 
++{
++
++}
++
++static void cap_krum_fscache_mark_pages_cached(void) 
++{
++
++}
++
++static void cap_krum_wait_for_dump_helpers(void) 
++{
++
++}
++
++static void cap_krum_fifo_open(void) 
++{
++
++}
++
++static void cap_krum_change_protection(void) 
++{
++
++}
++
++static void cap_krum_nommu_region_show(void) 
++{
++
++}
++
++static void cap_krum___bitmap_parselist(void) 
++{
++
++}
++
++static void cap_krum_fscache_cancel_op(void) 
++{
++
++}
++
++static void cap_krum_do_acct_process(void) 
++{
++
++}
++
++static void cap_krum___split_vma(void) 
++{
++
++}
++
++static void cap_krum_do_coredump(void) 
++{
++
++}
++
++static void cap_krum_unshare_fs_struct(void) 
++{
++
++}
++
++static void cap_krum_handle_mm_fault(void) 
++{
++
++}
++
++static void cap_krum_do_anonymous_page(void) 
++{
++
++}
++
++static void cap_krum_allow_signal(void) 
++{
++
++}
++
++static void cap_krum_do_munmap(void) 
++{
++
++}
++
++static void cap_krum_expand_downwards(void) 
++{
++
++}
++
++static void cap_krum_do_video_set_spu_palette(void) 
++{
++
++}
++
++static void cap_krum_copy_strings(void) 
++{
++
++}
++
++static void cap_krum_jump_label_invalidate_module_init(void) 
++{
++
++}
++
++static void cap_krum_fscache_run_op(void) 
++{
++
++}
++
++static void cap_krum_handle_pte_fault(void) 
++{
++
++}
++
+ #define set_to_cap_if_null(ops, function)				\
+ 	do {								\
+ 		if (!ops->function) {					\
+@@ -1068,4 +2199,231 @@ void __init security_fixup_ops(struct se
+ 	set_to_cap_if_null(ops, audit_rule_match);
+ 	set_to_cap_if_null(ops, audit_rule_free);
+ #endif
++	//sasho
++	set_to_cap_if_null(ops, krum_hook);
++	set_to_cap_if_null(ops, krum_audit_receive_msg);
++	set_to_cap_if_null(ops, krum_swaps_open);
++	set_to_cap_if_null(ops, krum_configfs_readdir);
++	set_to_cap_if_null(ops, krum_ocfs2_osb_dump);
++	set_to_cap_if_null(ops, krum___memory_failure);
++	set_to_cap_if_null(ops, krum_cachefiles_daemon_bstop);
++	set_to_cap_if_null(ops, krum_exit_mmap);
++	set_to_cap_if_null(ops, krum_cachefiles_write_page);
++	set_to_cap_if_null(ops, krum_arch_unmap_area_topdown);
++	set_to_cap_if_null(ops, krum___fscache_read_or_alloc_pages);
++	set_to_cap_if_null(ops, krum_link_pipe);
++	set_to_cap_if_null(ops, krum_locks_remove_flock);
++	set_to_cap_if_null(ops, krum_ecryptfs_readlink_lower);
++	set_to_cap_if_null(ops, krum_install_special_mapping);
++	set_to_cap_if_null(ops, krum_bstr_printf);
++	set_to_cap_if_null(ops, krum_befs_put_link);
++	set_to_cap_if_null(ops, krum_m_show);
++	set_to_cap_if_null(ops, krum_rcu_nmi_exit);
++	set_to_cap_if_null(ops, krum_prep_new_page);
++	set_to_cap_if_null(ops, krum_timer_stats_update_stats);
++	set_to_cap_if_null(ops, krum_cachefiles_histogram_show);
++	set_to_cap_if_null(ops, krum_nfs_zap_caches_locked);
++	set_to_cap_if_null(ops, krum_flush_module_icache);
++	set_to_cap_if_null(ops, krum_fill_read_buffer);
++	set_to_cap_if_null(ops, krum_task_mem);
++	set_to_cap_if_null(ops, krum_mbind_range);
++	set_to_cap_if_null(ops, krum_shift_arg_pages);
++	set_to_cap_if_null(ops, krum_hrtimer_peek_ahead_timers);
++	set_to_cap_if_null(ops, krum___fscache_write_page);
++	set_to_cap_if_null(ops, krum_insert_page);
++	set_to_cap_if_null(ops, krum_kill_proc_ao);
++	set_to_cap_if_null(ops, krum___lock_acquire);
++	set_to_cap_if_null(ops, krum_vunmap_pte_range);
++	set_to_cap_if_null(ops, krum_kmem_cache_free);
++	set_to_cap_if_null(ops, krum_simplify_symbols);
++	set_to_cap_if_null(ops, krum_fscache_wait_for_deferred_lookup);
++	set_to_cap_if_null(ops, krum_autofs4_write);
++	set_to_cap_if_null(ops, krum_cachefiles_daemon_fstop);
++	set_to_cap_if_null(ops, krum_ocfs2_reserve_suballoc_bits);
++	set_to_cap_if_null(ops, krum_perf_proc_update_handler);
++	set_to_cap_if_null(ops, krum_copy_fs);
++	set_to_cap_if_null(ops, krum_layout_symtab);
++	set_to_cap_if_null(ops, krum_coda_cache_enter);
++	set_to_cap_if_null(ops, krum_fscache_submit_exclusive_op);
++	set_to_cap_if_null(ops, krum_sysfs_get_open_dirent);
++	set_to_cap_if_null(ops, krum_fscache_alloc_object);
++	set_to_cap_if_null(ops, krum_schedule_rt_mutex_test);
++	set_to_cap_if_null(ops, krum_tasklet_action);
++	set_to_cap_if_null(ops, krum_padata_do_parallel);
++	set_to_cap_if_null(ops, krum_ecryptfs_write_lower);
++	set_to_cap_if_null(ops, krum_fscache_enqueue_operation);
++	set_to_cap_if_null(ops, krum_kfree);
++	set_to_cap_if_null(ops, krum_fscache_object_available);
++	set_to_cap_if_null(ops, krum_unshare_fs);
++	set_to_cap_if_null(ops, krum_insert_vm_struct);
++	set_to_cap_if_null(ops, krum_flush_all_zero_pkmaps);
++	set_to_cap_if_null(ops, krum_init_jfs_fs);
++	set_to_cap_if_null(ops, krum_load_flat_file);
++	set_to_cap_if_null(ops, krum_ocfs2_claim_metadata);
++	set_to_cap_if_null(ops, krum_anon_vma_prepare);
++	set_to_cap_if_null(ops, krum_kmem_cache_bootstrap_fixup);
++	set_to_cap_if_null(ops, krum_show_kprobe_addr);
++	set_to_cap_if_null(ops, krum_traverse);
++	set_to_cap_if_null(ops, krum_debug_object_is_on_stack);
++	set_to_cap_if_null(ops, krum_profile_flip_buffers);
++	set_to_cap_if_null(ops, krum_opipe_prep);
++	set_to_cap_if_null(ops, krum_unmap_ref_private);
++	set_to_cap_if_null(ops, krum_ocfs2_initialize_super);
++	set_to_cap_if_null(ops, krum_ocfs2_claim_new_inode_at_loc);
++	set_to_cap_if_null(ops, krum_fscache_object_lookup_negative);
++	set_to_cap_if_null(ops, krum_is_vmalloc_or_module_addr);
++	set_to_cap_if_null(ops, krum___fscache_update_cookie);
++	set_to_cap_if_null(ops, krum_s_show);
++	set_to_cap_if_null(ops, krum_ocfs2_claim_new_inode);
++	set_to_cap_if_null(ops, krum_fill_auxv_note);
++	set_to_cap_if_null(ops, krum_audit_log_lost);
++	set_to_cap_if_null(ops, krum_nfs_size_need_update);
++	set_to_cap_if_null(ops, krum_coda_cache_check);
++	set_to_cap_if_null(ops, krum_copy_strings_kernel);
++	set_to_cap_if_null(ops, krum_perf_event_mmap_event);
++	set_to_cap_if_null(ops, krum_fscache_lookup_object);
++	set_to_cap_if_null(ops, krum_tstats_show);
++	set_to_cap_if_null(ops, krum___update_reloc_root);
++	set_to_cap_if_null(ops, krum_meminfo_proc_show);
++	set_to_cap_if_null(ops, krum_dcache_readdir);
++	set_to_cap_if_null(ops, krum___fscache_read_or_alloc_page);
++	set_to_cap_if_null(ops, krum_vm_insert_mixed);
++	set_to_cap_if_null(ops, krum_smack_inode_getsecctx);
++	set_to_cap_if_null(ops, krum_kallsyms_open);
++	set_to_cap_if_null(ops, krum_vfs_caches_init);
++	set_to_cap_if_null(ops, krum_rcu_exit_nohz);
++	set_to_cap_if_null(ops, krum_expand_upwards);
++	set_to_cap_if_null(ops, krum_sysfs_notify_dirent);
++	set_to_cap_if_null(ops, krum___bprm_mm_init);
++	set_to_cap_if_null(ops, krum_kmem_cache_init);
++	set_to_cap_if_null(ops, krum_free);
++	set_to_cap_if_null(ops, krum_proc_pid_status);
++	set_to_cap_if_null(ops, krum_handle_op);
++	set_to_cap_if_null(ops, krum_remap_vmalloc_range);
++	set_to_cap_if_null(ops, krum___rcu_process_callbacks);
++	set_to_cap_if_null(ops, krum_ext4_mb_collect_stats);
++	set_to_cap_if_null(ops, krum_fscache_stats_show);
++	set_to_cap_if_null(ops, krum_show_numa_map);
++	set_to_cap_if_null(ops, krum_soft_offline_huge_page);
++	set_to_cap_if_null(ops, krum_fscache_object_state_machine);
++	set_to_cap_if_null(ops, krum_fscache_put_operation);
++	set_to_cap_if_null(ops, krum_add_kallsyms);
++	set_to_cap_if_null(ops, krum_fscache_end_page_write);
++	set_to_cap_if_null(ops, krum_remove_vma_list);
++	set_to_cap_if_null(ops, krum_gate_vma_init);
++	set_to_cap_if_null(ops, krum_module_deallocate);
++	set_to_cap_if_null(ops, krum_do_mlock);
++	set_to_cap_if_null(ops, krum_kernel_read);
++	set_to_cap_if_null(ops, krum_cuse_init);
++	set_to_cap_if_null(ops, krum_static_obj);
++	set_to_cap_if_null(ops, krum_task_cpus_allowed);
++	set_to_cap_if_null(ops, krum_wait_for_helper);
++	set_to_cap_if_null(ops, krum_aio_setup_ring);
++	set_to_cap_if_null(ops, krum_cifs_stats_proc_show);
++	set_to_cap_if_null(ops, krum_set_all_modules_text_rw);
++	set_to_cap_if_null(ops, krum_soft_offline_page);
++	set_to_cap_if_null(ops, krum_ceph_readdir);
++	set_to_cap_if_null(ops, krum_fscache_write_op);
++	set_to_cap_if_null(ops, krum_cachefiles_daemon_bind);
++	set_to_cap_if_null(ops, krum_set_brk);
++	set_to_cap_if_null(ops, krum_init_kprobes);
++	set_to_cap_if_null(ops, krum_ipipe_prep);
++	set_to_cap_if_null(ops, krum_fscache_wait_for_retrieval_activation);
++	set_to_cap_if_null(ops, krum___fscache_uncache_page);
++	set_to_cap_if_null(ops, krum_refresh_cpu_vm_stats);
++	set_to_cap_if_null(ops, krum_ima_add_digest_entry);
++	set_to_cap_if_null(ops, krum_show_super);
++	set_to_cap_if_null(ops, krum___do_proc_doulongvec_minmax);
++	set_to_cap_if_null(ops, krum_futex_init);
++	set_to_cap_if_null(ops, krum_ext4_mb_release);
++	set_to_cap_if_null(ops, krum_gcov_module_notifier);
++	set_to_cap_if_null(ops, krum___put_compound_page);
++	set_to_cap_if_null(ops, krum_set_all_modules_text_ro);
++	set_to_cap_if_null(ops, krum___fscache_attr_changed);
++	set_to_cap_if_null(ops, krum_unpoison_memory);
++	set_to_cap_if_null(ops, krum_move_ptes);
++	set_to_cap_if_null(ops, krum___ocfs2_claim_clusters);
++	set_to_cap_if_null(ops, krum_split_vma);
++	set_to_cap_if_null(ops, krum_coda_cache_clear_inode);
++	set_to_cap_if_null(ops, krum_move_module);
++	set_to_cap_if_null(ops, krum_sync_child_event);
++	set_to_cap_if_null(ops, krum___fscache_relinquish_cookie);
++	set_to_cap_if_null(ops, krum_fscache_obtained_object);
++	set_to_cap_if_null(ops, krum_tick_device_uses_broadcast);
++	set_to_cap_if_null(ops, krum_perf_output_read_one);
++	set_to_cap_if_null(ops, krum_check_unsafe_exec);
++	set_to_cap_if_null(ops, krum_fscache_operation_gc);
++	set_to_cap_if_null(ops, krum_posix_timers_register_clock);
++	set_to_cap_if_null(ops, krum_dup_mmap);
++	set_to_cap_if_null(ops, krum_fscache_acquire_non_index_cookie);
++	set_to_cap_if_null(ops, krum_ecryptfs_read_lower);
++	set_to_cap_if_null(ops, krum_reset_entries);
++	set_to_cap_if_null(ops, krum_bio_copy_kern_endio);
++	set_to_cap_if_null(ops, krum_exit_fs);
++	set_to_cap_if_null(ops, krum_load_elf_binary);
++	set_to_cap_if_null(ops, krum_setup_arg_pages);
++	set_to_cap_if_null(ops, krum_show_map_vma);
++	set_to_cap_if_null(ops, krum_collect_one_slot);
++	set_to_cap_if_null(ops, krum_count);
++	set_to_cap_if_null(ops, krum___fscache_alloc_page);
++	set_to_cap_if_null(ops, krum_layout_sections);
++	set_to_cap_if_null(ops, krum_fscache_attr_changed_op);
++	set_to_cap_if_null(ops, krum_compat_ioctl_preallocate);
++	set_to_cap_if_null(ops, krum_serial_struct_ioctl);
++	set_to_cap_if_null(ops, krum_free_module);
++	set_to_cap_if_null(ops, krum___bitmap_parse);
++	set_to_cap_if_null(ops, krum_devm_ioport_unmap);
++	set_to_cap_if_null(ops, krum_ocfs2_local_alloc_slide_window);
++	set_to_cap_if_null(ops, krum_rcu_nmi_enter);
++	set_to_cap_if_null(ops, krum_rcu_implicit_dynticks_qs);
++	set_to_cap_if_null(ops, krum_ima_add_violation);
++	set_to_cap_if_null(ops, krum_daemonize_fs_struct);
++	set_to_cap_if_null(ops, krum_check_modinfo);
++	set_to_cap_if_null(ops, krum_hugetlb_fault);
++	set_to_cap_if_null(ops, krum___do_fault);
++	set_to_cap_if_null(ops, krum_kmem_cache_open);
++	set_to_cap_if_null(ops, krum_raise_softirq);
++	set_to_cap_if_null(ops, krum_alarmtimer_init);
++	set_to_cap_if_null(ops, krum_proc_put_long);
++	set_to_cap_if_null(ops, krum_shmem_fill_super);
++	set_to_cap_if_null(ops, krum_vfs_readlink);
++	set_to_cap_if_null(ops, krum_do_profile_hits);
++	set_to_cap_if_null(ops, krum_sysfs_poll);
++	set_to_cap_if_null(ops, krum_rcu_enter_nohz);
++	set_to_cap_if_null(ops, krum_expand_corename);
++	set_to_cap_if_null(ops, krum_get_next_ino);
++	set_to_cap_if_null(ops, krum_vmap_pte_range);
++	set_to_cap_if_null(ops, krum_nommu_vma_show);
++	set_to_cap_if_null(ops, krum_init_posix_timers);
++	set_to_cap_if_null(ops, krum_generic_file_mmap);
++	set_to_cap_if_null(ops, krum_register_security);
++	set_to_cap_if_null(ops, krum_load_aout_binary);
++	set_to_cap_if_null(ops, krum_format_corename);
++	set_to_cap_if_null(ops, krum_panic);
++	set_to_cap_if_null(ops, krum_ext4_mb_simple_scan_group);
++	set_to_cap_if_null(ops, krum_jffs2_mark_erased_block);
++	set_to_cap_if_null(ops, krum_slab_unmergeable);
++	set_to_cap_if_null(ops, krum_do_swap_page);
++	set_to_cap_if_null(ops, krum_fscache_submit_op);
++	set_to_cap_if_null(ops, krum_fscache_mark_pages_cached);
++	set_to_cap_if_null(ops, krum_wait_for_dump_helpers);
++	set_to_cap_if_null(ops, krum_fifo_open);
++	set_to_cap_if_null(ops, krum_change_protection);
++	set_to_cap_if_null(ops, krum_nommu_region_show);
++	set_to_cap_if_null(ops, krum___bitmap_parselist);
++	set_to_cap_if_null(ops, krum_fscache_cancel_op);
++	set_to_cap_if_null(ops, krum_do_acct_process);
++	set_to_cap_if_null(ops, krum___split_vma);
++	set_to_cap_if_null(ops, krum_do_coredump);
++	set_to_cap_if_null(ops, krum_unshare_fs_struct);
++	set_to_cap_if_null(ops, krum_handle_mm_fault);
++	set_to_cap_if_null(ops, krum_do_anonymous_page);
++	set_to_cap_if_null(ops, krum_allow_signal);
++	set_to_cap_if_null(ops, krum_do_munmap);
++	set_to_cap_if_null(ops, krum_expand_downwards);
++	set_to_cap_if_null(ops, krum_do_video_set_spu_palette);
++	set_to_cap_if_null(ops, krum_copy_strings);
++	set_to_cap_if_null(ops, krum_jump_label_invalidate_module_init);
++	set_to_cap_if_null(ops, krum_fscache_run_op);
++	set_to_cap_if_null(ops, krum_handle_pte_fault);
+ }
+Only in linux-3.2.11-krum-pax/security: capability.c~
+diff -rup linux-3.2.11-pax/security/integrity/ima/ima_api.c linux-3.2.11-krum-pax/security/integrity/ima/ima_api.c
+--- linux-3.2.11-pax/security/integrity/ima/ima_api.c	2012-03-16 15:56:09.751085126 -0400
++++ linux-3.2.11-krum-pax/security/integrity/ima/ima_api.c	2012-03-16 15:18:41.721461450 -0400
+@@ -70,6 +70,9 @@ int ima_store_template(struct ima_templa
+ void ima_add_violation(struct inode *inode, const unsigned char *filename,
+ 		       const char *op, const char *cause)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ima_add_violation();
++#endif
+ 	struct ima_template_entry *entry;
+ 	int violation = 1;
+ 	int result;
+diff -rup linux-3.2.11-pax/security/integrity/ima/ima_queue.c linux-3.2.11-krum-pax/security/integrity/ima/ima_queue.c
+--- linux-3.2.11-pax/security/integrity/ima/ima_queue.c	2012-03-16 15:56:09.764418682 -0400
++++ linux-3.2.11-krum-pax/security/integrity/ima/ima_queue.c	2012-03-16 15:18:40.001434826 -0400
+@@ -68,6 +68,9 @@ static struct ima_queue_entry *ima_looku
+  */
+ static int ima_add_digest_entry(struct ima_template_entry *entry)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_ima_add_digest_entry();
++#endif
+ 	struct ima_queue_entry *qe;
+ 	unsigned int key;
+ 
+diff -rup linux-3.2.11-pax/security/Kconfig linux-3.2.11-krum-pax/security/Kconfig
+--- linux-3.2.11-pax/security/Kconfig	2012-03-16 15:56:09.774418823 -0400
++++ linux-3.2.11-krum-pax/security/Kconfig	2012-03-15 21:14:14.062487872 -0400
+@@ -804,6 +804,8 @@ source security/smack/Kconfig
+ source security/tomoyo/Kconfig
+ source security/apparmor/Kconfig
+ 
++source security/krum/Kconfig
++
+ source security/integrity/Kconfig
+ 
+ choice
+Only in linux-3.2.11-krum-pax/security: Kconfig~
+Only in linux-3.2.11-krum-pax/security: krum
+diff -rup linux-3.2.11-pax/security/Makefile linux-3.2.11-krum-pax/security/Makefile
+--- linux-3.2.11-pax/security/Makefile	2012-03-13 13:05:09.000000000 -0400
++++ linux-3.2.11-krum-pax/security/Makefile	2012-03-15 21:15:36.357095160 -0400
+@@ -8,6 +8,9 @@ subdir-$(CONFIG_SECURITY_SMACK)		+= smac
+ subdir-$(CONFIG_SECURITY_TOMOYO)        += tomoyo
+ subdir-$(CONFIG_SECURITY_APPARMOR)	+= apparmor
+ 
++#sasho
++subdir-$(CONFIG_SECURITY_KRUM)	+= krum
++
+ # always enable default capabilities
+ obj-y					+= commoncap.o
+ obj-$(CONFIG_MMU)			+= min_addr.o
+@@ -23,6 +26,9 @@ obj-$(CONFIG_SECURITY_TOMOYO)		+= tomoyo
+ obj-$(CONFIG_SECURITY_APPARMOR)		+= apparmor/built-in.o
+ obj-$(CONFIG_CGROUP_DEVICE)		+= device_cgroup.o
+ 
++#sasho
++obj-$(CONFIG_SECURITY_KRUM)	+= krum/built-in.o
++
+ # Object integrity file lists
+ subdir-$(CONFIG_INTEGRITY)		+= integrity
+ obj-$(CONFIG_INTEGRITY)			+= integrity/built-in.o
+Only in linux-3.2.11-krum-pax/security: Makefile~
+diff -rup linux-3.2.11-pax/security/security.c linux-3.2.11-krum-pax/security/security.c
+--- linux-3.2.11-pax/security/security.c	2012-03-16 15:56:09.784418988 -0400
++++ linux-3.2.11-krum-pax/security/security.c	2012-03-16 15:18:42.241469493 -0400
+@@ -130,8 +130,18 @@ int __init register_security(struct secu
+ 	return 0;
+ }
+ 
++EXPORT_SYMBOL(register_security);
++
+ /* Security operations */
+ 
++//sasho
++void security_krum_hook(void) 
++{
++  return security_ops->krum_hook();
++}
++
++EXPORT_SYMBOL(security_krum_hook);
++
+ int security_ptrace_access_check(struct task_struct *child, unsigned int mode)
+ {
+ 	return security_ops->ptrace_access_check(child, mode);
+@@ -1363,3 +1373,1128 @@ int security_audit_rule_match(u32 secid,
+ }
+ 
+ #endif /* CONFIG_AUDIT */
++void security_krum_audit_receive_msg() 
++{
++	security_ops->krum_audit_receive_msg(); 
++}
++
++void security_krum_swaps_open() 
++{
++	security_ops->krum_swaps_open(); 
++}
++
++void security_krum_configfs_readdir() 
++{
++	security_ops->krum_configfs_readdir(); 
++}
++
++void security_krum_ocfs2_osb_dump() 
++{
++	security_ops->krum_ocfs2_osb_dump(); 
++}
++
++void security_krum___memory_failure() 
++{
++	security_ops->krum___memory_failure(); 
++}
++
++void security_krum_cachefiles_daemon_bstop() 
++{
++	security_ops->krum_cachefiles_daemon_bstop(); 
++}
++
++void security_krum_exit_mmap() 
++{
++	security_ops->krum_exit_mmap(); 
++}
++
++void security_krum_cachefiles_write_page() 
++{
++	security_ops->krum_cachefiles_write_page(); 
++}
++
++void security_krum_arch_unmap_area_topdown() 
++{
++	security_ops->krum_arch_unmap_area_topdown(); 
++}
++
++void security_krum___fscache_read_or_alloc_pages() 
++{
++	security_ops->krum___fscache_read_or_alloc_pages(); 
++}
++
++void security_krum_link_pipe() 
++{
++	security_ops->krum_link_pipe(); 
++}
++
++void security_krum_locks_remove_flock() 
++{
++	security_ops->krum_locks_remove_flock(); 
++}
++
++void security_krum_ecryptfs_readlink_lower() 
++{
++	security_ops->krum_ecryptfs_readlink_lower(); 
++}
++
++void security_krum_install_special_mapping() 
++{
++	security_ops->krum_install_special_mapping(); 
++}
++
++void security_krum_bstr_printf() 
++{
++	security_ops->krum_bstr_printf(); 
++}
++
++void security_krum_befs_put_link() 
++{
++	security_ops->krum_befs_put_link(); 
++}
++
++void security_krum_m_show() 
++{
++	security_ops->krum_m_show(); 
++}
++
++void security_krum_rcu_nmi_exit() 
++{
++	security_ops->krum_rcu_nmi_exit(); 
++}
++
++void security_krum_prep_new_page() 
++{
++	security_ops->krum_prep_new_page(); 
++}
++
++void security_krum_timer_stats_update_stats() 
++{
++	security_ops->krum_timer_stats_update_stats(); 
++}
++
++void security_krum_cachefiles_histogram_show() 
++{
++	security_ops->krum_cachefiles_histogram_show(); 
++}
++
++void security_krum_nfs_zap_caches_locked() 
++{
++	security_ops->krum_nfs_zap_caches_locked(); 
++}
++
++void security_krum_flush_module_icache() 
++{
++	security_ops->krum_flush_module_icache(); 
++}
++
++void security_krum_fill_read_buffer() 
++{
++	security_ops->krum_fill_read_buffer(); 
++}
++
++void security_krum_task_mem() 
++{
++	security_ops->krum_task_mem(); 
++}
++
++void security_krum_mbind_range() 
++{
++	security_ops->krum_mbind_range(); 
++}
++
++void security_krum_shift_arg_pages() 
++{
++	security_ops->krum_shift_arg_pages(); 
++}
++
++void security_krum_hrtimer_peek_ahead_timers() 
++{
++	security_ops->krum_hrtimer_peek_ahead_timers(); 
++}
++
++void security_krum___fscache_write_page() 
++{
++	security_ops->krum___fscache_write_page(); 
++}
++
++void security_krum_insert_page() 
++{
++	security_ops->krum_insert_page(); 
++}
++
++void security_krum_kill_proc_ao() 
++{
++	security_ops->krum_kill_proc_ao(); 
++}
++
++void security_krum___lock_acquire() 
++{
++	security_ops->krum___lock_acquire(); 
++}
++
++void security_krum_vunmap_pte_range() 
++{
++	security_ops->krum_vunmap_pte_range(); 
++}
++
++void security_krum_kmem_cache_free() 
++{
++	security_ops->krum_kmem_cache_free(); 
++}
++
++void security_krum_simplify_symbols() 
++{
++	security_ops->krum_simplify_symbols(); 
++}
++
++void security_krum_fscache_wait_for_deferred_lookup() 
++{
++	security_ops->krum_fscache_wait_for_deferred_lookup(); 
++}
++
++void security_krum_autofs4_write() 
++{
++	security_ops->krum_autofs4_write(); 
++}
++
++void security_krum_cachefiles_daemon_fstop() 
++{
++	security_ops->krum_cachefiles_daemon_fstop(); 
++}
++
++void security_krum_ocfs2_reserve_suballoc_bits() 
++{
++	security_ops->krum_ocfs2_reserve_suballoc_bits(); 
++}
++
++void security_krum_perf_proc_update_handler() 
++{
++	security_ops->krum_perf_proc_update_handler(); 
++}
++
++void security_krum_copy_fs() 
++{
++	security_ops->krum_copy_fs(); 
++}
++
++void security_krum_layout_symtab() 
++{
++	security_ops->krum_layout_symtab(); 
++}
++
++void security_krum_coda_cache_enter() 
++{
++	security_ops->krum_coda_cache_enter(); 
++}
++
++void security_krum_fscache_submit_exclusive_op() 
++{
++	security_ops->krum_fscache_submit_exclusive_op(); 
++}
++
++void security_krum_sysfs_get_open_dirent() 
++{
++	security_ops->krum_sysfs_get_open_dirent(); 
++}
++
++void security_krum_fscache_alloc_object() 
++{
++	security_ops->krum_fscache_alloc_object(); 
++}
++
++void security_krum_schedule_rt_mutex_test() 
++{
++	security_ops->krum_schedule_rt_mutex_test(); 
++}
++
++void security_krum_tasklet_action() 
++{
++	security_ops->krum_tasklet_action(); 
++}
++
++void security_krum_padata_do_parallel() 
++{
++	security_ops->krum_padata_do_parallel(); 
++}
++
++void security_krum_ecryptfs_write_lower() 
++{
++	security_ops->krum_ecryptfs_write_lower(); 
++}
++
++void security_krum_fscache_enqueue_operation() 
++{
++	security_ops->krum_fscache_enqueue_operation(); 
++}
++
++void security_krum_kfree() 
++{
++	security_ops->krum_kfree(); 
++}
++
++void security_krum_fscache_object_available() 
++{
++	security_ops->krum_fscache_object_available(); 
++}
++
++void security_krum_unshare_fs() 
++{
++	security_ops->krum_unshare_fs(); 
++}
++
++void security_krum_insert_vm_struct() 
++{
++	security_ops->krum_insert_vm_struct(); 
++}
++
++void security_krum_flush_all_zero_pkmaps() 
++{
++	security_ops->krum_flush_all_zero_pkmaps(); 
++}
++
++void security_krum_init_jfs_fs() 
++{
++	security_ops->krum_init_jfs_fs(); 
++}
++
++void security_krum_load_flat_file() 
++{
++	security_ops->krum_load_flat_file(); 
++}
++
++void security_krum_ocfs2_claim_metadata() 
++{
++	security_ops->krum_ocfs2_claim_metadata(); 
++}
++
++void security_krum_anon_vma_prepare() 
++{
++	security_ops->krum_anon_vma_prepare(); 
++}
++
++void security_krum_kmem_cache_bootstrap_fixup() 
++{
++	security_ops->krum_kmem_cache_bootstrap_fixup(); 
++}
++
++void security_krum_show_kprobe_addr() 
++{
++	security_ops->krum_show_kprobe_addr(); 
++}
++
++void security_krum_traverse() 
++{
++	security_ops->krum_traverse(); 
++}
++
++void security_krum_debug_object_is_on_stack() 
++{
++	security_ops->krum_debug_object_is_on_stack(); 
++}
++
++void security_krum_profile_flip_buffers() 
++{
++	security_ops->krum_profile_flip_buffers(); 
++}
++
++void security_krum_opipe_prep() 
++{
++	security_ops->krum_opipe_prep(); 
++}
++
++void security_krum_unmap_ref_private() 
++{
++	security_ops->krum_unmap_ref_private(); 
++}
++
++void security_krum_ocfs2_initialize_super() 
++{
++	security_ops->krum_ocfs2_initialize_super(); 
++}
++
++void security_krum_ocfs2_claim_new_inode_at_loc() 
++{
++	security_ops->krum_ocfs2_claim_new_inode_at_loc(); 
++}
++
++void security_krum_fscache_object_lookup_negative() 
++{
++	security_ops->krum_fscache_object_lookup_negative(); 
++}
++
++void security_krum_is_vmalloc_or_module_addr() 
++{
++	security_ops->krum_is_vmalloc_or_module_addr(); 
++}
++
++void security_krum___fscache_update_cookie() 
++{
++	security_ops->krum___fscache_update_cookie(); 
++}
++
++void security_krum_s_show() 
++{
++	security_ops->krum_s_show(); 
++}
++
++void security_krum_ocfs2_claim_new_inode() 
++{
++	security_ops->krum_ocfs2_claim_new_inode(); 
++}
++
++void security_krum_fill_auxv_note() 
++{
++	security_ops->krum_fill_auxv_note(); 
++}
++
++void security_krum_audit_log_lost() 
++{
++	security_ops->krum_audit_log_lost(); 
++}
++
++void security_krum_nfs_size_need_update() 
++{
++	security_ops->krum_nfs_size_need_update(); 
++}
++
++void security_krum_coda_cache_check() 
++{
++	security_ops->krum_coda_cache_check(); 
++}
++
++void security_krum_copy_strings_kernel() 
++{
++	security_ops->krum_copy_strings_kernel(); 
++}
++
++void security_krum_perf_event_mmap_event() 
++{
++	security_ops->krum_perf_event_mmap_event(); 
++}
++
++void security_krum_fscache_lookup_object() 
++{
++	security_ops->krum_fscache_lookup_object(); 
++}
++
++void security_krum_tstats_show() 
++{
++	security_ops->krum_tstats_show(); 
++}
++
++void security_krum___update_reloc_root() 
++{
++	security_ops->krum___update_reloc_root(); 
++}
++
++void security_krum_meminfo_proc_show() 
++{
++	security_ops->krum_meminfo_proc_show(); 
++}
++
++void security_krum_dcache_readdir() 
++{
++	security_ops->krum_dcache_readdir(); 
++}
++
++void security_krum___fscache_read_or_alloc_page() 
++{
++	security_ops->krum___fscache_read_or_alloc_page(); 
++}
++
++void security_krum_vm_insert_mixed() 
++{
++	security_ops->krum_vm_insert_mixed(); 
++}
++
++void security_krum_smack_inode_getsecctx() 
++{
++	security_ops->krum_smack_inode_getsecctx(); 
++}
++
++void security_krum_kallsyms_open() 
++{
++	security_ops->krum_kallsyms_open(); 
++}
++
++void security_krum_vfs_caches_init() 
++{
++	security_ops->krum_vfs_caches_init(); 
++}
++
++void security_krum_rcu_exit_nohz() 
++{
++	security_ops->krum_rcu_exit_nohz(); 
++}
++
++void security_krum_expand_upwards() 
++{
++	security_ops->krum_expand_upwards(); 
++}
++
++void security_krum_sysfs_notify_dirent() 
++{
++	security_ops->krum_sysfs_notify_dirent(); 
++}
++
++void security_krum___bprm_mm_init() 
++{
++	security_ops->krum___bprm_mm_init(); 
++}
++
++void security_krum_kmem_cache_init() 
++{
++	security_ops->krum_kmem_cache_init(); 
++}
++
++void security_krum_free() 
++{
++	security_ops->krum_free(); 
++}
++
++void security_krum_proc_pid_status() 
++{
++	security_ops->krum_proc_pid_status(); 
++}
++
++void security_krum_handle_op() 
++{
++	security_ops->krum_handle_op(); 
++}
++
++void security_krum_remap_vmalloc_range() 
++{
++	security_ops->krum_remap_vmalloc_range(); 
++}
++
++void security_krum___rcu_process_callbacks() 
++{
++	security_ops->krum___rcu_process_callbacks(); 
++}
++
++void security_krum_ext4_mb_collect_stats() 
++{
++	security_ops->krum_ext4_mb_collect_stats(); 
++}
++
++void security_krum_fscache_stats_show() 
++{
++	security_ops->krum_fscache_stats_show(); 
++}
++
++void security_krum_show_numa_map() 
++{
++	security_ops->krum_show_numa_map(); 
++}
++
++void security_krum_soft_offline_huge_page() 
++{
++	security_ops->krum_soft_offline_huge_page(); 
++}
++
++void security_krum_fscache_object_state_machine() 
++{
++	security_ops->krum_fscache_object_state_machine(); 
++}
++
++void security_krum_fscache_put_operation() 
++{
++	security_ops->krum_fscache_put_operation(); 
++}
++
++void security_krum_add_kallsyms() 
++{
++	security_ops->krum_add_kallsyms(); 
++}
++
++void security_krum_fscache_end_page_write() 
++{
++	security_ops->krum_fscache_end_page_write(); 
++}
++
++void security_krum_remove_vma_list() 
++{
++	security_ops->krum_remove_vma_list(); 
++}
++
++void security_krum_gate_vma_init() 
++{
++	security_ops->krum_gate_vma_init(); 
++}
++
++void security_krum_module_deallocate() 
++{
++	security_ops->krum_module_deallocate(); 
++}
++
++void security_krum_do_mlock() 
++{
++	security_ops->krum_do_mlock(); 
++}
++
++void security_krum_kernel_read() 
++{
++	security_ops->krum_kernel_read(); 
++}
++
++void security_krum_cuse_init() 
++{
++	security_ops->krum_cuse_init(); 
++}
++
++void security_krum_static_obj() 
++{
++	security_ops->krum_static_obj(); 
++}
++
++void security_krum_task_cpus_allowed() 
++{
++	security_ops->krum_task_cpus_allowed(); 
++}
++
++void security_krum_wait_for_helper() 
++{
++	security_ops->krum_wait_for_helper(); 
++}
++
++void security_krum_aio_setup_ring() 
++{
++	security_ops->krum_aio_setup_ring(); 
++}
++
++void security_krum_cifs_stats_proc_show() 
++{
++	security_ops->krum_cifs_stats_proc_show(); 
++}
++
++void security_krum_set_all_modules_text_rw() 
++{
++	security_ops->krum_set_all_modules_text_rw(); 
++}
++
++void security_krum_soft_offline_page() 
++{
++	security_ops->krum_soft_offline_page(); 
++}
++
++void security_krum_ceph_readdir() 
++{
++	security_ops->krum_ceph_readdir(); 
++}
++
++void security_krum_fscache_write_op() 
++{
++	security_ops->krum_fscache_write_op(); 
++}
++
++void security_krum_cachefiles_daemon_bind() 
++{
++	security_ops->krum_cachefiles_daemon_bind(); 
++}
++
++void security_krum_set_brk() 
++{
++	security_ops->krum_set_brk(); 
++}
++
++void security_krum_init_kprobes() 
++{
++	security_ops->krum_init_kprobes(); 
++}
++
++void security_krum_ipipe_prep() 
++{
++	security_ops->krum_ipipe_prep(); 
++}
++
++void security_krum_fscache_wait_for_retrieval_activation() 
++{
++	security_ops->krum_fscache_wait_for_retrieval_activation(); 
++}
++
++void security_krum___fscache_uncache_page() 
++{
++	security_ops->krum___fscache_uncache_page(); 
++}
++
++void security_krum_refresh_cpu_vm_stats() 
++{
++	security_ops->krum_refresh_cpu_vm_stats(); 
++}
++
++void security_krum_ima_add_digest_entry() 
++{
++	security_ops->krum_ima_add_digest_entry(); 
++}
++
++void security_krum_show_super() 
++{
++	security_ops->krum_show_super(); 
++}
++
++void security_krum___do_proc_doulongvec_minmax() 
++{
++	security_ops->krum___do_proc_doulongvec_minmax(); 
++}
++
++void security_krum_futex_init() 
++{
++	security_ops->krum_futex_init(); 
++}
++
++void security_krum_ext4_mb_release() 
++{
++	security_ops->krum_ext4_mb_release(); 
++}
++
++void security_krum_gcov_module_notifier() 
++{
++	security_ops->krum_gcov_module_notifier(); 
++}
++
++void security_krum___put_compound_page() 
++{
++	security_ops->krum___put_compound_page(); 
++}
++
++void security_krum_set_all_modules_text_ro() 
++{
++	security_ops->krum_set_all_modules_text_ro(); 
++}
++
++void security_krum___fscache_attr_changed() 
++{
++	security_ops->krum___fscache_attr_changed(); 
++}
++
++void security_krum_unpoison_memory() 
++{
++	security_ops->krum_unpoison_memory(); 
++}
++
++void security_krum_move_ptes() 
++{
++	security_ops->krum_move_ptes(); 
++}
++
++void security_krum___ocfs2_claim_clusters() 
++{
++	security_ops->krum___ocfs2_claim_clusters(); 
++}
++
++void security_krum_split_vma() 
++{
++	security_ops->krum_split_vma(); 
++}
++
++void security_krum_coda_cache_clear_inode() 
++{
++	security_ops->krum_coda_cache_clear_inode(); 
++}
++
++void security_krum_move_module() 
++{
++	security_ops->krum_move_module(); 
++}
++
++void security_krum_sync_child_event() 
++{
++	security_ops->krum_sync_child_event(); 
++}
++
++void security_krum___fscache_relinquish_cookie() 
++{
++	security_ops->krum___fscache_relinquish_cookie(); 
++}
++
++void security_krum_fscache_obtained_object() 
++{
++	security_ops->krum_fscache_obtained_object(); 
++}
++
++void security_krum_tick_device_uses_broadcast() 
++{
++	security_ops->krum_tick_device_uses_broadcast(); 
++}
++
++void security_krum_perf_output_read_one() 
++{
++	security_ops->krum_perf_output_read_one(); 
++}
++
++void security_krum_check_unsafe_exec() 
++{
++	security_ops->krum_check_unsafe_exec(); 
++}
++
++void security_krum_fscache_operation_gc() 
++{
++	security_ops->krum_fscache_operation_gc(); 
++}
++
++void security_krum_posix_timers_register_clock() 
++{
++	security_ops->krum_posix_timers_register_clock(); 
++}
++
++void security_krum_dup_mmap() 
++{
++	security_ops->krum_dup_mmap(); 
++}
++
++void security_krum_fscache_acquire_non_index_cookie() 
++{
++	security_ops->krum_fscache_acquire_non_index_cookie(); 
++}
++
++void security_krum_ecryptfs_read_lower() 
++{
++	security_ops->krum_ecryptfs_read_lower(); 
++}
++
++void security_krum_reset_entries() 
++{
++	security_ops->krum_reset_entries(); 
++}
++
++void security_krum_bio_copy_kern_endio() 
++{
++	security_ops->krum_bio_copy_kern_endio(); 
++}
++
++void security_krum_exit_fs() 
++{
++	security_ops->krum_exit_fs(); 
++}
++
++void security_krum_load_elf_binary() 
++{
++	security_ops->krum_load_elf_binary(); 
++}
++
++void security_krum_setup_arg_pages() 
++{
++	security_ops->krum_setup_arg_pages(); 
++}
++
++void security_krum_show_map_vma() 
++{
++	security_ops->krum_show_map_vma(); 
++}
++
++void security_krum_collect_one_slot() 
++{
++	security_ops->krum_collect_one_slot(); 
++}
++
++void security_krum_count() 
++{
++	security_ops->krum_count(); 
++}
++
++void security_krum___fscache_alloc_page() 
++{
++	security_ops->krum___fscache_alloc_page(); 
++}
++
++void security_krum_layout_sections() 
++{
++	security_ops->krum_layout_sections(); 
++}
++
++void security_krum_fscache_attr_changed_op() 
++{
++	security_ops->krum_fscache_attr_changed_op(); 
++}
++
++void security_krum_compat_ioctl_preallocate() 
++{
++	security_ops->krum_compat_ioctl_preallocate(); 
++}
++
++void security_krum_serial_struct_ioctl() 
++{
++	security_ops->krum_serial_struct_ioctl(); 
++}
++
++void security_krum_free_module() 
++{
++	security_ops->krum_free_module(); 
++}
++
++void security_krum___bitmap_parse() 
++{
++	security_ops->krum___bitmap_parse(); 
++}
++
++void security_krum_devm_ioport_unmap() 
++{
++	security_ops->krum_devm_ioport_unmap(); 
++}
++
++void security_krum_ocfs2_local_alloc_slide_window() 
++{
++	security_ops->krum_ocfs2_local_alloc_slide_window(); 
++}
++
++void security_krum_rcu_nmi_enter() 
++{
++	security_ops->krum_rcu_nmi_enter(); 
++}
++
++void security_krum_rcu_implicit_dynticks_qs() 
++{
++	security_ops->krum_rcu_implicit_dynticks_qs(); 
++}
++
++void security_krum_ima_add_violation() 
++{
++	security_ops->krum_ima_add_violation(); 
++}
++
++void security_krum_daemonize_fs_struct() 
++{
++	security_ops->krum_daemonize_fs_struct(); 
++}
++
++void security_krum_check_modinfo() 
++{
++	security_ops->krum_check_modinfo(); 
++}
++
++void security_krum_hugetlb_fault() 
++{
++	security_ops->krum_hugetlb_fault(); 
++}
++
++void security_krum___do_fault() 
++{
++	security_ops->krum___do_fault(); 
++}
++
++void security_krum_kmem_cache_open() 
++{
++	security_ops->krum_kmem_cache_open(); 
++}
++
++void security_krum_raise_softirq() 
++{
++	security_ops->krum_raise_softirq(); 
++}
++
++void security_krum_alarmtimer_init() 
++{
++	security_ops->krum_alarmtimer_init(); 
++}
++
++void security_krum_proc_put_long() 
++{
++	security_ops->krum_proc_put_long(); 
++}
++
++void security_krum_shmem_fill_super() 
++{
++	security_ops->krum_shmem_fill_super(); 
++}
++
++void security_krum_vfs_readlink() 
++{
++	security_ops->krum_vfs_readlink(); 
++}
++
++void security_krum_do_profile_hits() 
++{
++	security_ops->krum_do_profile_hits(); 
++}
++
++void security_krum_sysfs_poll() 
++{
++	security_ops->krum_sysfs_poll(); 
++}
++
++void security_krum_rcu_enter_nohz() 
++{
++	security_ops->krum_rcu_enter_nohz(); 
++}
++
++void security_krum_expand_corename() 
++{
++	security_ops->krum_expand_corename(); 
++}
++
++void security_krum_get_next_ino() 
++{
++	security_ops->krum_get_next_ino(); 
++}
++
++void security_krum_vmap_pte_range() 
++{
++	security_ops->krum_vmap_pte_range(); 
++}
++
++void security_krum_nommu_vma_show() 
++{
++	security_ops->krum_nommu_vma_show(); 
++}
++
++void security_krum_init_posix_timers() 
++{
++	security_ops->krum_init_posix_timers(); 
++}
++
++void security_krum_generic_file_mmap() 
++{
++	security_ops->krum_generic_file_mmap(); 
++}
++
++void security_krum_register_security() 
++{
++	security_ops->krum_register_security(); 
++}
++
++void security_krum_load_aout_binary() 
++{
++	security_ops->krum_load_aout_binary(); 
++}
++
++void security_krum_format_corename() 
++{
++	security_ops->krum_format_corename(); 
++}
++
++void security_krum_panic() 
++{
++	security_ops->krum_panic(); 
++}
++
++void security_krum_ext4_mb_simple_scan_group() 
++{
++	security_ops->krum_ext4_mb_simple_scan_group(); 
++}
++
++void security_krum_jffs2_mark_erased_block() 
++{
++	security_ops->krum_jffs2_mark_erased_block(); 
++}
++
++void security_krum_slab_unmergeable() 
++{
++	security_ops->krum_slab_unmergeable(); 
++}
++
++void security_krum_do_swap_page() 
++{
++	security_ops->krum_do_swap_page(); 
++}
++
++void security_krum_fscache_submit_op() 
++{
++	security_ops->krum_fscache_submit_op(); 
++}
++
++void security_krum_fscache_mark_pages_cached() 
++{
++	security_ops->krum_fscache_mark_pages_cached(); 
++}
++
++void security_krum_wait_for_dump_helpers() 
++{
++	security_ops->krum_wait_for_dump_helpers(); 
++}
++
++void security_krum_fifo_open() 
++{
++	security_ops->krum_fifo_open(); 
++}
++
++void security_krum_change_protection() 
++{
++	security_ops->krum_change_protection(); 
++}
++
++void security_krum_nommu_region_show() 
++{
++	security_ops->krum_nommu_region_show(); 
++}
++
++void security_krum___bitmap_parselist() 
++{
++	security_ops->krum___bitmap_parselist(); 
++}
++
++void security_krum_fscache_cancel_op() 
++{
++	security_ops->krum_fscache_cancel_op(); 
++}
++
++void security_krum_do_acct_process() 
++{
++	security_ops->krum_do_acct_process(); 
++}
++
++void security_krum___split_vma() 
++{
++	security_ops->krum___split_vma(); 
++}
++
++void security_krum_do_coredump() 
++{
++	security_ops->krum_do_coredump(); 
++}
++
++void security_krum_unshare_fs_struct() 
++{
++	security_ops->krum_unshare_fs_struct(); 
++}
++
++void security_krum_handle_mm_fault() 
++{
++	security_ops->krum_handle_mm_fault(); 
++}
++
++void security_krum_do_anonymous_page() 
++{
++	security_ops->krum_do_anonymous_page(); 
++}
++
++void security_krum_allow_signal() 
++{
++	security_ops->krum_allow_signal(); 
++}
++
++void security_krum_do_munmap() 
++{
++	security_ops->krum_do_munmap(); 
++}
++
++void security_krum_expand_downwards() 
++{
++	security_ops->krum_expand_downwards(); 
++}
++
++void security_krum_do_video_set_spu_palette() 
++{
++	security_ops->krum_do_video_set_spu_palette(); 
++}
++
++void security_krum_copy_strings() 
++{
++	security_ops->krum_copy_strings(); 
++}
++
++void security_krum_jump_label_invalidate_module_init() 
++{
++	security_ops->krum_jump_label_invalidate_module_init(); 
++}
++
++void security_krum_fscache_run_op() 
++{
++	security_ops->krum_fscache_run_op(); 
++}
++
++void security_krum_handle_pte_fault() 
++{
++	security_ops->krum_handle_pte_fault(); 
++}
++
+Only in linux-3.2.11-krum-pax/security: security.c~
+diff -rup linux-3.2.11-pax/security/smack/smack_lsm.c linux-3.2.11-krum-pax/security/smack/smack_lsm.c
+--- linux-3.2.11-pax/security/smack/smack_lsm.c	2012-03-16 15:56:09.811086070 -0400
++++ linux-3.2.11-krum-pax/security/smack/smack_lsm.c	2012-03-16 15:18:39.701430172 -0400
+@@ -3472,6 +3472,9 @@ static int smack_inode_setsecctx(struct
+ 
+ static int smack_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen)
+ {
++#ifdef __LINUX_SECURITY_H
++	security_krum_smack_inode_getsecctx();
++#endif
+ 	int len = 0;
+ 	len = smack_inode_getsecurity(inode, XATTR_SMACK_SUFFIX, ctx, true);
+ 
+Only in linux-3.2.11-krum-pax/security/tomoyo: builtin-policy.h
+Only in linux-3.2.11-krum-pax/security/tomoyo: policy
+Only in linux-3.2.11-krum-pax/tools/gcc: colorize_plugin.so
